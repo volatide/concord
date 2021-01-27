@@ -12188,6 +12188,8 @@ class Signal(object):
 
     @staticmethod
     def __init__(*types:type, name:typing.Optional[str]=..., arguments:typing.Optional[str]=...) -> None: ...
+    emit:typing.Callable
+    connect:typing.Callable[[typing.Callable]]
 
 
 class SignalInstance(object):
@@ -12199,10 +12201,8 @@ class SignalInstance(object):
     def emit(*args:typing.Any) -> None: ...
 
 
-class Slot(object):
+def Slot(*types:type, name:typing.Optional[str]=..., result:typing.Optional[str]=...) -> typing.Callable: ...
 
-    @staticmethod
-    def __init__(*types:type, name:typing.Optional[str]=..., result:typing.Optional[str]=...) -> typing.Callable: ...
 
 @staticmethod
 def QEnum(arg__1:object) -> object: ...
