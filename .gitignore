@@ -59,6 +59,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Qt Creator user files
+*.pyproject.user
+*.pyproject.user.*
+
 # Distribution / packaging
 .Python
 build/
