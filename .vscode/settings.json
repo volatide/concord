@@ -1,3 +1,4 @@
 {
+    // Because stub files aren't executed, we provide custom stubs for PySide2 packages (minimally modified)
     "python.analysis.stubPath": "typings"
 }
