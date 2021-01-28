@@ -193,3 +193,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Temporary token file
+src/token.txt

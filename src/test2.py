@@ -7,16 +7,6 @@ from PySide2.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequ
 
 app = QApplication(sys.argv)
 
-# define a new slot that receives a string and has
-# 'saySomeWords' as its name
-@Slot(str)
-def say_some_words(words):
-    print(words)
-
-class Communicate(QObject):
-    # create a new signal on the fly and name it 'speak'
-    speak = Signal(str)
-
 class DiscordPostRequest(QObject):
     finished = Signal(dict)
 
@@ -32,20 +22,13 @@ class DiscordPostRequest(QObject):
         pass
     
     def handle_finished(self, reply: QNetworkReply):
-        self.finished.emit(json.loads(str(reply.readAll().data(), "utf-8")))
+        jsonsak = json.loads(str(reply.readAll().data(), "utf-8"))
 
-class DiscordApi(QObject):
-    auth = Signal(str)
+        self.finished.emit(jsonsak)
 
-someone = Communicate()
-
-# connect signal and slot
-someone.speak.connect(say_some_words)
-
-# emit 'speak' signal
-someone.speak.emit("Hello everybody!")
-
-sak = DiscordPostRequest("https://discord.com/api/v8/users/@me/guilds", "TOKEN")
+with open("token.txt") as file:
+    token = file.read().strip()
+sak = DiscordPostRequest("https://discord.com/api/v8/users/@me/guilds", token)
 sak.finished.connect(print)
 # sak.send()
 while 1:
