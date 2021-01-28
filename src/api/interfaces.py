@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import Literal, Optional, List, Tuple
+from typing import Any, Literal, Optional, List, Tuple, Union
 from dataclasses import dataclass
+from __future__ import annotations
 
 MessageNotificationLevel = Literal[0, 1]
 
@@ -14,11 +15,20 @@ MFALevel = Literal[0, 1]
 VerificationLevel = Literal[0, 1, 2, 3, 4]
 
 PremiumTier = Literal[0, 1, 2, 3]
+
 PremiumType = Literal[0, 1, 2]
-
 ChannelType = Literal[0, 1, 2, 3, 4, 5, 6]
-
 ActivityType = Literal[0, 1, 2, 3, 4, 5]
+MessageType = Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 19, 20]
+MessageActivityType = Literal[1, 2, 3, 5]
+EmbedType = Literal[
+    "rich", 
+    "image",
+    "video",
+    "gifv",
+    "article",
+    "link"]
+StickerType = Literal[1, 2, 3]
 
 SystemChannelFlags = Literal[
     1 << 0, 1 << 1,
@@ -46,6 +56,7 @@ GuildFeature = Literal[
 
 UserFlags = int
 ActivityFlags = int
+MessageFlags = int
 
 Snowflake = str
 
@@ -66,6 +77,8 @@ class Role:
     managed: bool
     mentionable: bool
     tags: Optional[RoleTags] = None
+
+WebhookUser = Any
 
 @dataclass
 class User:
@@ -282,4 +295,142 @@ class Guild:
     approximate_presence_count: Optional[int] = None
     welcome_screen: Optional[WelcomeScreen] = None
 
+@dataclass
+class Attachment:
+    id: Snowflake
+    filename: str
+    size: int
+    url: str
+    proxy_url: str
+    height: Optional[int]
+    width: Optional[int]
 
+@dataclass
+class _EmbedObjBase:
+    url: Optional[str] = None
+    proxy_url: Optional[str] = None
+    height: Optional[int] = None
+    width: Optional[int] = None
+
+@dataclass
+class EmbedThumbnail(_EmbedObjBase):
+    pass
+
+@dataclass
+class EmbedVideo(_EmbedObjBase):
+    pass
+
+@dataclass
+class EmbedImage(_EmbedObjBase):
+    pass
+
+@dataclass
+class EmbedProvider:
+    name: Optional[str] = None
+    url: Optional[str] = None
+
+@dataclass
+class EmbedAuthor:
+    name: Optional[str] = None
+    url: Optional[str] = None
+    icon_url: Optional[str] = None
+    proxy_icon_url: Optional[str] = None
+
+@dataclass
+class EmbedFooter:
+    text: str
+    icon_url: Optional[str] = None
+    proxy_icon_url: Optional[str] = None
+
+@dataclass
+class EmbedField:
+    name: str
+    value: str
+    inline: Optional[bool] = None
+
+@dataclass
+class Embed:
+    title: Optional[str] = None
+    type: Optional[EmbedType] = None
+    description: Optional[str] = None
+    url: Optional[str] = None
+    timestamp: Optional[datetime] = None
+    color: Optional[int] = None
+    footer: Optional[EmbedFooter] = None
+    image: Optional[EmbedImage] = None
+    thumbnail: Optional[EmbedThumbnail] = None
+    video: Optional[EmbedVideo] = None
+    provider: Optional[EmbedProvider] = None
+    author: Optional[EmbedAuthor] = None
+    fields: Optional[List[EmbedField]] = None
+
+@dataclass
+class ChannelMention:
+    id: Snowflake
+    guild_id: Snowflake
+    type: ChannelType
+    name: str
+
+@dataclass
+class Reaction:
+    count: int
+    me: bool
+    emoji: Emoji #?
+
+@dataclass
+class MessageActivity:
+    type: MessageActivityType
+    party_id: Optional[str]  = None
+
+@dataclass
+class MessageApplication:
+    id: Snowflake
+    description: str
+    icon: Optional[str]
+    name: str
+    cover_image: Optional[str] = None
+
+@dataclass
+class MessageReference:
+    message_id: Optional[Snowflake] = None
+    channel_id: Optional[Snowflake] = None
+    guild_id: Optional[Snowflake] = None
+
+@dataclass
+class Sticker:
+    id: Snowflake
+    pack_id: Snowflake
+    name: str
+    description: str
+    asset: str
+    preview_asset: Optional[str]
+    format_type: StickerType
+    tags: Optional[str] = None
+
+@dataclass
+class Message:
+    id: Snowflake
+    channel_id: Snowflake
+    author: Union[User, WebhookUser] #?
+    content: str
+    timestamp: datetime
+    edited_timestamp: Optional[datetime]
+    tts: bool
+    mention_everyone: bool
+    mentions: List[User] #?
+    attachments: List[Attachment]
+    embeds: List[Embed]
+    pinned: bool
+    type: MessageType
+    guild_id: Optional[Snowflake] = None
+    member: Optional[Member] = None
+    mention_channels: Optional[List[ChannelMention]] = None
+    reactions: Optional[Reaction] = None
+    nonce: Optional[Union[str, int]] = None
+    webhook_id: Optional[Snowflake] = None
+    activity: Optional[MessageActivity] = None
+    application: Optional[MessageApplication] = None
+    message_reference: Optional[MessageReference] = None
+    flags: Optional[MessageFlags] = None
+    stickers: Optional[List[Sticker]] = None
+    referenced_message: Optional[Message] = None #?
