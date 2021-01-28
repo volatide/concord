@@ -26,9 +26,10 @@ class DiscordPostRequest(QObject):
         self.manager.finished.connect(self.handle_finished)
         self.request = QNetworkRequest(QUrl(url))
         self.request.setRawHeader(QByteArray("Authorization".encode("utf-8")), QByteArray(token.encode("utf-8")))
+        self.manager.get(self.request)
     
     def send(self):
-        self.manager.get(self.request)
+        pass
     
     def handle_finished(self, reply: QNetworkReply):
         self.finished.emit(json.loads(str(reply.readAll().data(), "utf-8")))
@@ -44,8 +45,8 @@ someone.speak.connect(say_some_words)
 # emit 'speak' signal
 someone.speak.emit("Hello everybody!")
 
-sak = DiscordPostRequest("https://discord.com/api/v8/users/@me/guilds", "TOKEN")
+sak = DiscordPostRequest("https://discord.com/api/v8/users/@me/guilds", "mfa.mG6il8Vxgc9gf8hHveslPaI1sx93FaUuqFpREbRdWCFQRD5iowar-UGFLhCrNUycoWfk0kVR1EIHUho79c7T")
 sak.finished.connect(print)
-sak.send()
+# sak.send()
 while 1:
     app.processEvents()
