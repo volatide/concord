@@ -1,7 +1,7 @@
+from __future__ import annotations
 from datetime import datetime
 from typing import Any, Literal, Optional, List, Tuple, Union
 from dataclasses import dataclass
-from __future__ import annotations
 
 MessageNotificationLevel = Literal[0, 1]
 
@@ -71,7 +71,7 @@ class Role:
     color: int
     hoist: bool
     position: int
-    permisions: str
+    permissions: str
     managed: bool
     mentionable: bool
     tags: Optional[RoleTags] = None
@@ -444,7 +444,7 @@ class Sticker:
 class Message:
     id: Snowflake
     channel_id: Snowflake
-    author: Union[User, WebhookUser]  # ?
+    author: User# Union[User, WebhookUser]  # ?
     content: str
     timestamp: datetime
     edited_timestamp: Optional[datetime]
@@ -459,7 +459,7 @@ class Message:
     member: Optional[Member] = None
     mention_channels: Optional[List[ChannelMention]] = None
     reactions: Optional[Reaction] = None
-    nonce: Optional[Union[str, int]] = None
+    nonce: Optional[Any] = None
     webhook_id: Optional[Snowflake] = None
     activity: Optional[MessageActivity] = None
     application: Optional[MessageApplication] = None
