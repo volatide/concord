@@ -45,7 +45,7 @@ someone.speak.connect(say_some_words)
 # emit 'speak' signal
 someone.speak.emit("Hello everybody!")
 
-sak = DiscordPostRequest("https://discord.com/api/v8/users/@me/guilds", "mfa.mG6il8Vxgc9gf8hHveslPaI1sx93FaUuqFpREbRdWCFQRD5iowar-UGFLhCrNUycoWfk0kVR1EIHUho79c7T")
+sak = DiscordPostRequest("https://discord.com/api/v8/users/@me/guilds", "TOKEN")
 sak.finished.connect(print)
 # sak.send()
 while 1:
