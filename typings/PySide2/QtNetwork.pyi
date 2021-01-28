@@ -870,6 +870,8 @@ class QNetworkAccessManager(PySide2.QtCore.QObject):
     def supportedSchemesImplementation(self) -> typing.List: ...
     def transferTimeout(self) -> int: ...
 
+    finished = PySide2.QtCore.Signal(PySide2.QtNetwork.QNetworkReply)
+
 
 class QNetworkAddressEntry(Shiboken.Object):
     DnsEligibilityUnknown    : QNetworkAddressEntry = ... # -0x1
