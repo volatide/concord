@@ -160,7 +160,10 @@ class Snowflake(int):
         return self & 0xFFF
 
 
-class ISO8601:
+class ISO8601(datetime):
+    """
+    Just returns a datetime object
+    """
     def __new__(cls, timestr):
         return parsetime(timestr)
 
