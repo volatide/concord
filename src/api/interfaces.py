@@ -54,8 +54,16 @@ UserFlags = int
 ActivityFlags = int
 MessageFlags = int
 
-Snowflake = str
+class Snowflake(int):
+    # def __init__(self, *args, **kwargs) -> None:
+    #     super().__init__(*args, **kwargs)
 
+    def __repr__(self) -> str:
+        return f"Snowflake({super().__repr__()})"
+
+class Permission(int):
+    def __repr__(self) -> str:
+        return f"Permission({super().__repr__()})"
 
 @dataclass
 class RoleTags:
@@ -71,7 +79,7 @@ class Role:
     color: int
     hoist: bool
     position: int
-    permissions: str
+    permissions: Permission
     managed: bool
     mentionable: bool
     tags: Optional[RoleTags] = None
@@ -107,7 +115,7 @@ class Member:
     mute: bool
     user: Optional[User] = None
     pending: Optional[bool] = None
-    permissions: Optional[int] = None  # pbs
+    permissions: Optional[Permission] = None
 
 
 @dataclass
@@ -149,8 +157,8 @@ class VoiceState:
 class Overwrite:
     id: Snowflake
     type: Literal[0, 1]
-    allow: str  # pbs
-    deny: str  # pbs
+    allow: Permission
+    deny: Permission
 
 
 @dataclass
@@ -292,7 +300,7 @@ class Guild:
 
     icon_hash: Optional[str] = None
     owner: Optional[bool] = None
-    permissions: Optional[str] = None  # pbs
+    permissions: Optional[Permission] = None
     widget_enabled: bool = False
     widget_channel_id: Optional[Snowflake] = None
     joined_at: Optional[str] = None
