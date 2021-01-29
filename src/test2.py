@@ -73,6 +73,8 @@ def map_types(meta:Callable, data:Any) -> Any:
 
     # If the data is in it's base form, cast it to that (example, int, Snowflake)
     if type(data) not in [dict, list, tuple]:
+
+        # A nullable field should not be cast to it's type (for example, str(None) #=> 'None')
         if data == None:
             return data
         return meta(data)
