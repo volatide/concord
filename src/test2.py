@@ -1,7 +1,7 @@
 from collections import namedtuple
 from pprint import pprint
 from types import SimpleNamespace
-from typing import Any, Callable, ClassVar, Dict, List, NamedTuple, NewType, Optional, Type, TypeVar, Union, get_origin
+from typing import Any, Callable, ClassVar, Dict, List, NamedTuple, NewType, Optional, Type, TypeVar, Union, cast, get_origin
 import sys
 import json
 import typing
@@ -53,9 +53,9 @@ def map_using_typehints(meta: Callable, data: dict, depth=0) -> object:
 
 
 T = TypeVar("T")
+# TT = Callable[..., T]
 
-
-def map_types(meta: T, data: Any) -> T:
+def map_types(meta: Callable[..., T], data: Any) -> T:
     """
     Takes in an object and a dictionary from a json response and parses it using typedefs from the object into that object, recursively
 
@@ -85,7 +85,7 @@ def map_types(meta: T, data: Any) -> T:
         # A nullable field should not be cast to it's type (for example, str(None) #=> 'None')
         if data == None:
             return data
-        return meta(data)  # type: ignore
+        return meta(data)
 
     # If the data is iterable (list or tuple),
     # map each item individually using list type args
@@ -104,7 +104,7 @@ def map_types(meta: T, data: Any) -> T:
                 except TypeError:
                     continue
             new.append(first)
-        return new  # type: ignore
+        return cast(T, new)
 
     # If the data is a dict, it should be mapped to it's meta (meta can be dict),
     # but should recurse as much as possible while there are typehints
@@ -127,8 +127,9 @@ def map_types(meta: T, data: Any) -> T:
                     continue
             new[field] = first
 
-    # Create object from own meta with named arguments
-    return meta(**new)  # type: ignore
+        # Create object from own meta with named arguments
+        return meta(**new)
+    return meta(**data)
 
 
 class DiscordPostRequest(QObject):
