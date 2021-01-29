@@ -4,8 +4,6 @@ from typing import Any, Literal, Optional, List, Tuple, Union
 from dataclasses import dataclass
 from enum import Enum
 
-# MessageNotificationLevel = Literal[0, 1]
-
 
 class MessageNotificationLevel(Enum):
     ALL_MESSAGES = 0
