@@ -6,27 +6,22 @@ from enum import Enum
 
 # MessageNotificationLevel = Literal[0, 1]
 
+
 class MessageNotificationLevel(Enum):
     ALL_MESSAGES = 0
     ONLY_MENTIONS = 1
 
-# ExplicitContentFilterLevel = Literal[
-#     "DISABLED",
-#     "MEMBERS_WITHOUT_ROLES",
-#     "ALL_MEMBERS"]
 
 class ExplicitContentFilterLevel(Enum):
     DISABLED = 0
     MEMBERS_WITHOUT_ROLES = 1
     ALL_MEMBERS = 2
 
-# MFALevel = Literal[0, 1]
 
 class MFALevel(Enum):
     NONE = 0
     ELEVATED = 1
 
-# VerificationLevel = Literal[0, 1, 2, 3, 4]
 
 class VerificationLevel(Enum):
     NONE = 0
@@ -36,21 +31,18 @@ class VerificationLevel(Enum):
     VERY_HIGH = 4
 
 
-# PremiumTier = Literal[0, 1, 2, 3]
-
 class PremiumTier(Enum):
     NONE = 0
     TIER_1 = 1
     TIER_2 = 2
     TIER_3 = 3
 
-# PremiumType = Literal[0, 1, 2]
 
 class PremiumType(Enum):
     NONE = 0
     NITRO_CLASSIC = 1
     NITRO = 2
-# ChannelType = Literal[0, 1, 2, 3, 4, 5, 6]
+
 
 class ChannelType(Enum):
     GUILD_TEXT = 0
@@ -61,7 +53,6 @@ class ChannelType(Enum):
     GUILD_NEWS = 5
     GUILD_STORE = 6
 
-# ActivityType = Literal[0, 1, 2, 3, 4, 5]
 
 class ActivityType(Enum):
     GAME = 0
@@ -70,11 +61,6 @@ class ActivityType(Enum):
     CUSTOM = 4
     COMPETING = 5
 
-# MessageType = Literal[
-#     0, 1, 2, 3, 4, 5, 6,
-#     7, 8, 9, 10, 11, 12,
-#     13, 14, 15, 19, 20]
-# MessageActivityType = Literal[1, 2, 3, 5]
 
 class MessageType(Enum):
     DEFAULT = 0
@@ -95,19 +81,13 @@ class MessageType(Enum):
     REPLY = 19
     APPLICATION_COMMAND = 20
 
+
 class MessageActivityType(Enum):
     JOIN = 1
     SPECTATE = 2
     LISTEN = 3
     JOIN_REQUEST = 5
 
-# EmbedType = Literal[
-#     "rich",
-#     "image",
-#     "video",
-#     "gifv",
-#     "article",
-#     "link"]
 
 class EmbedType(Enum):
     RICH = "rich"
@@ -117,18 +97,16 @@ class EmbedType(Enum):
     ARTICLE = "article"
     LINK = "link"
 
-# StickerType = Literal[1, 2, 3]
 
 class StickerType(Enum):
     PNG = 1
     APNG = 2
     LOTTIE = 3
 
+
 SystemChannelFlags = Literal[
     1 << 0, 1 << 1,
     1 << 0 | 1 << 1, 0]
-
-# Status = Literal["idle", "dnd", "online", "offline"]
 
 
 class Status(Enum):
@@ -136,17 +114,6 @@ class Status(Enum):
     DND = "dnd"
     ONLINE = "online"
     OFFLINE = "offline"
-
-# GuildFeature = Literal[
-#     "INVITE_SPLASH", "VIP_REGIONS",
-#     "VANITY_URL", "VERIFIED",
-#     "PARTNERED", "COMMUNITY",
-#     "COMMERCE", "NEWS",
-#     "DISCOVERABLE", "FEATURABLE",
-#     "ANIMATED_ICON", "BANNER",
-#     "WELCOME_SCREEN_ENABLED",
-#     "MEMBER_VERIFICATION_GATE_ENABLED",
-#     "PREVIEW_ENABLED"]
 
 
 class GuildFeature(Enum):
@@ -173,9 +140,6 @@ MessageFlags = int
 
 
 class Snowflake(int):
-    # def __init__(self, *args, **kwargs) -> None:
-    #     super().__init__(*args, **kwargs)
-
     def __repr__(self) -> str:
         return f"Snowflake({super().__repr__()})"
 
