@@ -1,7 +1,7 @@
 from collections import namedtuple
 from pprint import pprint
 from types import SimpleNamespace
-from typing import Any, Callable, Dict, NamedTuple, Type, Union, get_origin
+from typing import Any, Callable, ClassVar, Dict, List, NamedTuple, NewType, Optional, Type, TypeVar, Union, get_origin
 import sys
 import json
 import typing
@@ -52,7 +52,10 @@ def map_using_typehints(meta: Callable, data: dict, depth=0) -> object:
     return meta(**new_obj)
 
 
-def map_types(meta: Callable, data: Any) -> Any:
+T = TypeVar("T")
+
+
+def map_types(meta: T, data: Any) -> T:
     """
     Takes in an object and a dictionary from a json response and parses it using typedefs from the object into that object, recursively
 
@@ -82,7 +85,7 @@ def map_types(meta: Callable, data: Any) -> Any:
         # A nullable field should not be cast to it's type (for example, str(None) #=> 'None')
         if data == None:
             return data
-        return meta(data)
+        return meta(data)  # type: ignore
 
     # If the data is iterable (list or tuple),
     # map each item individually using list type args
@@ -101,7 +104,7 @@ def map_types(meta: Callable, data: Any) -> Any:
                 except TypeError:
                     continue
             new.append(first)
-        return new
+        return new  # type: ignore
 
     # If the data is a dict, it should be mapped to it's meta (meta can be dict),
     # but should recurse as much as possible while there are typehints
@@ -124,8 +127,8 @@ def map_types(meta: Callable, data: Any) -> Any:
                     continue
             new[field] = first
 
-        # Create object from own meta with named arguments
-        return meta(**new)
+    # Create object from own meta with named arguments
+    return meta(**new)  # type: ignore
 
 
 class DiscordPostRequest(QObject):
@@ -145,12 +148,8 @@ class DiscordPostRequest(QObject):
 
     def handle_finished(self, reply: QNetworkReply):
         jsonsak = json.loads(str(reply.readAll().data(), "utf-8"))
-        pprint(map_types(Guild, jsonsak))
-        # jsonsak["roles"] = list(map(lambda r: make(Role, r), jsonsak["roles"]))
-        # jsonsak["emojis"] = list(map(lambda e: make(Emoji, e), jsonsak["emojis"]))
-
-        # sak = Guild(**jsonsak)
-        # print(sak)
+        guild = map_types(Guild, jsonsak)
+        print(guild.id.time)
 
         self.finished.emit(jsonsak)
 
