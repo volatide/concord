@@ -13,10 +13,12 @@ from api.interfaces import Emoji, Guild, Role, Snowflake
 
 app = QApplication(sys.argv)
 
-def make(type:Any,kv:dict) -> object:
+
+def make(type: Any, kv: dict) -> object:
     return type(**kv)
 
-def map_using_typehints(meta:Callable, data:dict, depth=0) -> object:
+
+def map_using_typehints(meta: Callable, data: dict, depth=0) -> object:
     print("  "*depth, [meta, data])
     if meta in [Snowflake]:
         return meta(data)
@@ -29,7 +31,7 @@ def map_using_typehints(meta:Callable, data:dict, depth=0) -> object:
         # except TypeError:
         #     return SimpleNamespace(**data)
     hints: Dict[str, Type] = typing.get_type_hints(meta)
-    for field,_type in hints.items():
+    for field, _type in hints.items():
         if field in data:
             if type(data[field]) in [list, tuple]:
                 new_obj[field] = []
@@ -37,17 +39,20 @@ def map_using_typehints(meta:Callable, data:dict, depth=0) -> object:
                     first = None
                     for curr_type in typing.get_args(_type):
                         try:
-                            first = map_using_typehints(curr_type, item, depth+1)
+                            first = map_using_typehints(
+                                curr_type, item, depth+1)
                         except TypeError:
                             continue
                     new_obj[field].append(first)
-                    
+
             else:
                 for curr_type in typing.get_args(_type):
-                    new_obj[field] = map_using_typehints(_type, data[field], depth+1)
+                    new_obj[field] = map_using_typehints(
+                        _type, data[field], depth+1)
     return meta(**new_obj)
 
-def map_types(meta:Callable, data:Any) -> Any:
+
+def map_types(meta: Callable, data: Any) -> Any:
     """
     Takes in an object and a dictionary from a json response and parses it using typedefs from the object into that object, recursively
 
@@ -61,7 +66,7 @@ def map_types(meta:Callable, data:Any) -> Any:
     @dataclass
     class Example:
         foo: Bar
-    
+
     map_types(Example, {
         "foo": {
             "value": "Some text", 
@@ -78,8 +83,8 @@ def map_types(meta:Callable, data:Any) -> Any:
         if data == None:
             return data
         return meta(data)
-    
-    # If the data is iterable (list or tuple), 
+
+    # If the data is iterable (list or tuple),
     # map each item individually using list type args
     if type(data) in [list, tuple]:
         new = []
@@ -88,7 +93,7 @@ def map_types(meta:Callable, data:Any) -> Any:
             types = typing.get_args(meta)
             if not types:
                 types = [meta]
-            
+
             # This is due to Optional arguments (Union[T, None])
             for _type in types:
                 try:
@@ -98,19 +103,19 @@ def map_types(meta:Callable, data:Any) -> Any:
             new.append(first)
         return new
 
-    # If the data is a dict, it should be mapped to it's meta (meta can be dict), 
+    # If the data is a dict, it should be mapped to it's meta (meta can be dict),
     # but should recurse as much as possible while there are typehints
     if type(data) == dict:
         new = {}
         hints: Dict[str, Type] = typing.get_type_hints(meta)
-        for field,_type in hints.items():
+        for field, _type in hints.items():
             first = None
             if field not in data:
                 continue
             types = typing.get_args(_type)
             if not types:
                 types = [_type]
-            
+
             # This is due to Optional arguments (Union[T, None])
             for __type in types:
                 try:
@@ -118,9 +123,10 @@ def map_types(meta:Callable, data:Any) -> Any:
                 except TypeError:
                     continue
             new[field] = first
-            
+
         # Create object from own meta with named arguments
         return meta(**new)
+
 
 class DiscordPostRequest(QObject):
     finished = Signal(dict)
@@ -130,12 +136,13 @@ class DiscordPostRequest(QObject):
         self.manager = QNetworkAccessManager(self)
         self.manager.finished.connect(self.handle_finished)
         self.request = QNetworkRequest(QUrl(url))
-        self.request.setRawHeader(QByteArray("Authorization".encode("utf-8")), QByteArray(token.encode("utf-8")))
+        self.request.setRawHeader(QByteArray("Authorization".encode(
+            "utf-8")), QByteArray(token.encode("utf-8")))
         self.manager.get(self.request)
-    
+
     def send(self):
         pass
-    
+
     def handle_finished(self, reply: QNetworkReply):
         jsonsak = json.loads(str(reply.readAll().data(), "utf-8"))
         pprint(map_types(Guild, jsonsak))
@@ -147,9 +154,11 @@ class DiscordPostRequest(QObject):
 
         self.finished.emit(jsonsak)
 
+
 with open("token.txt") as file:
     token = file.read().strip()
-sak = DiscordPostRequest("https://discord.com/api/v8/guilds/409073849414713356", token)
+sak = DiscordPostRequest(
+    "https://discord.com/api/v8/guilds/409073849414713356", token)
 # sak.finished.connect(print)
 # sak.send()
 while 1:

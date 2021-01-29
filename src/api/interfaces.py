@@ -54,6 +54,7 @@ UserFlags = int
 ActivityFlags = int
 MessageFlags = int
 
+
 class Snowflake(int):
     # def __init__(self, *args, **kwargs) -> None:
     #     super().__init__(*args, **kwargs)
@@ -61,9 +62,11 @@ class Snowflake(int):
     def __repr__(self) -> str:
         return f"Snowflake({super().__repr__()})"
 
+
 class Permission(int):
     def __repr__(self) -> str:
         return f"Permission({super().__repr__()})"
+
 
 @dataclass
 class RoleTags:
@@ -452,7 +455,7 @@ class Sticker:
 class Message:
     id: Snowflake
     channel_id: Snowflake
-    author: User# Union[User, WebhookUser]  # ?
+    author: User  # Union[User, WebhookUser]  # ?
     content: str
     timestamp: datetime
     edited_timestamp: Optional[datetime]
