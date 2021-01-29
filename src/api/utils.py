@@ -52,6 +52,9 @@ def map_types(meta: Callable[..., T], data: Any) -> T:
                 except TypeError:
                     continue
             new.append(first)
+
+        # This is to skip creating a nested function to allow lists to be mapped,
+        # but is a bad way to do it
         return cast(T, new)
 
     # If the data is a dict, it should be mapped to it's meta (meta can be dict),
