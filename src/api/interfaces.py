@@ -534,7 +534,7 @@ class Sticker:
 class Message:
     id: Snowflake
     channel_id: Snowflake
-    author: User  # Union[User, WebhookUser]  # ?
+    author: Union[User, WebhookUser]  # ?
     content: str
     timestamp: datetime
     edited_timestamp: Optional[datetime]
