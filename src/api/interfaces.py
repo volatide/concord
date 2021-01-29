@@ -2,53 +2,170 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Literal, Optional, List, Tuple, Union
 from dataclasses import dataclass
+from enum import Enum
 
-MessageNotificationLevel = Literal[0, 1]
+# MessageNotificationLevel = Literal[0, 1]
 
-ExplicitContentFilterLevel = Literal[
-    "DISABLED",
-    "MEMBERS_WITHOUT_ROLES",
-    "ALL_MEMBERS"]
+class MessageNotificationLevel(Enum):
+    ALL_MESSAGES = 0
+    ONLY_MENTIONS = 1
 
-MFALevel = Literal[0, 1]
+# ExplicitContentFilterLevel = Literal[
+#     "DISABLED",
+#     "MEMBERS_WITHOUT_ROLES",
+#     "ALL_MEMBERS"]
 
-VerificationLevel = Literal[0, 1, 2, 3, 4]
+class ExplicitContentFilterLevel(Enum):
+    DISABLED = 0
+    MEMBERS_WITHOUT_ROLES = 1
+    ALL_MEMBERS = 2
 
-PremiumTier = Literal[0, 1, 2, 3]
+# MFALevel = Literal[0, 1]
 
-PremiumType = Literal[0, 1, 2]
-ChannelType = Literal[0, 1, 2, 3, 4, 5, 6]
-ActivityType = Literal[0, 1, 2, 3, 4, 5]
-MessageType = Literal[
-    0, 1, 2, 3, 4, 5, 6,
-    7, 8, 9, 10, 11, 12,
-    13, 14, 15, 19, 20]
-MessageActivityType = Literal[1, 2, 3, 5]
-EmbedType = Literal[
-    "rich",
-    "image",
-    "video",
-    "gifv",
-    "article",
-    "link"]
-StickerType = Literal[1, 2, 3]
+class MFALevel(Enum):
+    NONE = 0
+    ELEVATED = 1
+
+# VerificationLevel = Literal[0, 1, 2, 3, 4]
+
+class VerificationLevel(Enum):
+    NONE = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    VERY_HIGH = 4
+
+
+# PremiumTier = Literal[0, 1, 2, 3]
+
+class PremiumTier(Enum):
+    NONE = 0
+    TIER_1 = 1
+    TIER_2 = 2
+    TIER_3 = 3
+
+# PremiumType = Literal[0, 1, 2]
+
+class PremiumType(Enum):
+    NONE = 0
+    NITRO_CLASSIC = 1
+    NITRO = 2
+# ChannelType = Literal[0, 1, 2, 3, 4, 5, 6]
+
+class ChannelType(Enum):
+    GUILD_TEXT = 0
+    DM = 1
+    GUILD_VOICE = 2
+    GROUP_DM = 3
+    GUILD_CATEGORY = 4
+    GUILD_NEWS = 5
+    GUILD_STORE = 6
+
+# ActivityType = Literal[0, 1, 2, 3, 4, 5]
+
+class ActivityType(Enum):
+    GAME = 0
+    STREAMING = 1
+    LISTENING = 2
+    CUSTOM = 4
+    COMPETING = 5
+
+# MessageType = Literal[
+#     0, 1, 2, 3, 4, 5, 6,
+#     7, 8, 9, 10, 11, 12,
+#     13, 14, 15, 19, 20]
+# MessageActivityType = Literal[1, 2, 3, 5]
+
+class MessageType(Enum):
+    DEFAULT = 0
+    RECIPIENT_ADD = 1
+    RECIPIENT_REMOVE = 2
+    CALL = 3
+    CHANNEL_NAME_CHANGE = 4
+    CHANNEL_ICON_CHANGE = 5
+    CHANNEL_PINNED_MESSAGE = 6
+    GUILD_MEMBER_JOIN = 7
+    USER_PREMIUM_GUILD_SUBSCRIPTION = 8
+    USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_1 = 9
+    USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_2 = 10
+    USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_3 = 11
+    CHANNEL_FOLLOW_ADD = 12
+    GUILD_DISCOVERY_DISQUALIFIED = 14
+    GUILD_DISCOVERY_REQUALIFIED = 15
+    REPLY = 19
+    APPLICATION_COMMAND = 20
+
+class MessageActivityType(Enum):
+    JOIN = 1
+    SPECTATE = 2
+    LISTEN = 3
+    JOIN_REQUEST = 5
+
+# EmbedType = Literal[
+#     "rich",
+#     "image",
+#     "video",
+#     "gifv",
+#     "article",
+#     "link"]
+
+class EmbedType(Enum):
+    RICH = "rich"
+    IMAGE = "image"
+    VIDEO = "video"
+    GIFV = "gifv"
+    ARTICLE = "article"
+    LINK = "link"
+
+# StickerType = Literal[1, 2, 3]
+
+class StickerType(Enum):
+    PNG = 1
+    APNG = 2
+    LOTTIE = 3
 
 SystemChannelFlags = Literal[
     1 << 0, 1 << 1,
     1 << 0 | 1 << 1, 0]
 
-Status = Literal["idle", "dnd", "online", "offline"]
+# Status = Literal["idle", "dnd", "online", "offline"]
 
-GuildFeature = Literal[
-    "INVITE_SPLASH", "VIP_REGIONS",
-    "VANITY_URL", "VERIFIED",
-    "PARTNERED", "COMMUNITY",
-    "COMMERCE", "NEWS",
-    "DISCOVERABLE", "FEATURABLE",
-    "ANIMATED_ICON", "BANNER",
-    "WELCOME_SCREEN_ENABLED",
-    "MEMBER_VERIFICATION_GATE_ENABLED",
-    "PREVIEW_ENABLED"]
+
+class Status(Enum):
+    IDLE = "idle"
+    DND = "dnd"
+    ONLINE = "online"
+    OFFLINE = "offline"
+
+# GuildFeature = Literal[
+#     "INVITE_SPLASH", "VIP_REGIONS",
+#     "VANITY_URL", "VERIFIED",
+#     "PARTNERED", "COMMUNITY",
+#     "COMMERCE", "NEWS",
+#     "DISCOVERABLE", "FEATURABLE",
+#     "ANIMATED_ICON", "BANNER",
+#     "WELCOME_SCREEN_ENABLED",
+#     "MEMBER_VERIFICATION_GATE_ENABLED",
+#     "PREVIEW_ENABLED"]
+
+
+class GuildFeature(Enum):
+    INVITE_SPLASH = "INVITE_SPLASH"
+    VIP_REGIONS = "VIP_REGIONS"
+    VANITY_URL = "VANITY_URL"
+    VERIFIED = "VERIFIED"
+    PARTNERED = "PARTNERED"
+    COMMUNITY = "COMMUNITY"
+    COMMERCE = "COMMERCE"
+    NEWS = "NEWS"
+    DISCOVERABLE = "DISCOVERABLE"
+    FEATURABLE = "FEATURABLE"
+    ANIMATED_ICON = "ANIMATED_ICON"
+    BANNER = "BANNER"
+    WELCOME_SCREEN_ENABLED = "WELCOME_SCREEN_ENABLED"
+    MEMBER_VERIFICATION_GATE_ENABLED = "MEMBER_VERIFICATION_GATE_ENABLED"
+    PREVIEW_ENABLED = "PREVIEW_ENABLED"
+
 
 UserFlags = int
 ActivityFlags = int
