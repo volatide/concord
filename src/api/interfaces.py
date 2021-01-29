@@ -140,20 +140,20 @@ MessageFlags = int
 class Snowflake(int):
     def __repr__(self) -> str:
         return f"Snowflake({super().__repr__()})"
-    
+
     @property
     def time(self) -> datetime:
         unix_time = ((self >> 22) + 1420070400000)/1000
         return datetime.fromtimestamp(unix_time)
-    
+
     @property
     def internal_worker_id(self) -> int:
         return (self & 0x3E0000) >> 17
-    
+
     @property
     def internal_process_id(self) -> int:
         return (self & 0x1F000) >> 12
-    
+
     @property
     def increment(self) -> int:
         return self & 0xFFF
