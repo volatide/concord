@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QApplication, QPushButton
 from PySide2.QtCore import QByteArray, QObject, QUrl, Signal, Slot
 from PySide2.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 from dataclasses import fields
-from api.interfaces import Emoji, Guild, Role, Snowflake
+from api.interfaces import Channel, Emoji, Guild, Member, Role, Snowflake, User
 
 app = QApplication(sys.argv)
 
@@ -149,8 +149,9 @@ class DiscordPostRequest(QObject):
 
     def handle_finished(self, reply: QNetworkReply):
         jsonsak = json.loads(str(reply.readAll().data(), "utf-8"))
-        guild = map_types(Guild, jsonsak)
-        print(guild.id.time)
+        print(jsonsak)
+        channel = map_types(Channel, jsonsak)
+        print(channel.last_pin_timestamp)
 
         self.finished.emit(jsonsak)
 
@@ -158,7 +159,7 @@ class DiscordPostRequest(QObject):
 with open("token.txt") as file:
     token = file.read().strip()
 sak = DiscordPostRequest(
-    "https://discord.com/api/v8/guilds/409073849414713356", token)
+    "https://discord.com/api/v8/channels/409073849905315847", token)
 # sak.finished.connect(print)
 # sak.send()
 while 1:

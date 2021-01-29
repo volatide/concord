@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, Literal, Optional, List, Tuple, Union
 from dataclasses import dataclass
 from enum import Enum
+from dateutil.parser import parse as parsetime
 
 
 class MessageNotificationLevel(Enum):
@@ -159,6 +160,10 @@ class Snowflake(int):
         return self & 0xFFF
 
 
+class ISO8601:
+    def __new__(cls, timestr):
+        return parsetime(timestr)
+
 class Permission(int):
     def __repr__(self) -> str:
         return f"Permission({super().__repr__()})"
@@ -208,8 +213,8 @@ class User:
 class Member:
     nick: Optional[str]
     roles: List[Snowflake]
-    joined_at: datetime
-    premium_since: datetime
+    joined_at: ISO8601
+    premium_since: ISO8601
     deaf: bool
     mute: bool
     user: Optional[User] = None
@@ -279,7 +284,7 @@ class Channel:
     owner_id: Optional[Snowflake] = None
     application_id: Optional[Snowflake] = None
     parent_id: Optional[Snowflake] = None
-    last_pin_timestamp: Optional[datetime] = None
+    last_pin_timestamp: Optional[ISO8601] = None
 
 
 @dataclass
@@ -487,7 +492,7 @@ class Embed:
     type: Optional[EmbedType] = None
     description: Optional[str] = None
     url: Optional[str] = None
-    timestamp: Optional[datetime] = None
+    timestamp: Optional[ISO8601] = None
     color: Optional[int] = None
     footer: Optional[EmbedFooter] = None
     image: Optional[EmbedImage] = None
@@ -553,8 +558,8 @@ class Message:
     channel_id: Snowflake
     author: Union[User, WebhookUser]  # ?
     content: str
-    timestamp: datetime
-    edited_timestamp: Optional[datetime]
+    timestamp: ISO8601
+    edited_timestamp: Optional[ISO8601]
     tts: bool
     mention_everyone: bool
     mentions: List[User]  # ?
