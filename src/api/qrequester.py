@@ -5,9 +5,11 @@ from .endpoints import APIRequest, Method
 from .utils import map_types
 import json
 
+
 class QRequester(QObject):
-    finished = Signal(object)  # Is fired when the reply finishes and returns json data
-    
+    # Is fired when the reply finishes and returns json data
+    finished = Signal(object)
+
     def __init__(self, url, meta: Callable, method: Method = "GET", data: dict = {}) -> None:
         super().__init__()
         self.meta = meta
@@ -18,12 +20,14 @@ class QRequester(QObject):
             QNetworkRequest.KnownHeaders.ContentTypeHeader, "application/json")
         args = [request, QByteArray(self.request.method.encode("utf-8"))]
 
-        for key,value in self.request.headers.items():
-            request.setRawHeader(QByteArray(key.encode("utf-8")), QByteArray(value.encode("utf-8")))
+        for key, value in self.request.headers.items():
+            request.setRawHeader(QByteArray(key.encode(
+                "utf-8")), QByteArray(value.encode("utf-8")))
 
         if self.request.method not in ["GET"]:
-            args.append(QByteArray(json.dumps(self.request.data).encode("utf-8")))
-        
+            args.append(QByteArray(json.dumps(
+                self.request.data).encode("utf-8")))
+
         self.manager.finished.connect(self._handle_request)
         self.manager.sendCustomRequest(*args)
 
