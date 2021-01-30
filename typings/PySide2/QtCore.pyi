@@ -12189,7 +12189,7 @@ class Signal(object):
     @staticmethod
     def __init__(*types:type, name:typing.Optional[str]=..., arguments:typing.Optional[str]=...) -> None: ...
     emit:typing.Callable
-    connect:typing.Callable[[typing.Callable]]
+    connect:typing.Callable[[typing.Callable], None]
 
 
 class SignalInstance(object):
