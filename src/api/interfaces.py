@@ -133,6 +133,10 @@ class GuildFeature(Enum):
     PREVIEW_ENABLED = "PREVIEW_ENABLED"
 
 
+class OverwriteType(Enum):
+    ROLE = 0
+    MEMBER = 1
+
 UserFlags = int
 ActivityFlags = int
 MessageFlags = int
@@ -263,7 +267,7 @@ class VoiceState:
 @dataclass
 class Overwrite:
     id: Snowflake
-    type: Literal[0, 1]
+    type: OverwriteType
     allow: Permission
     deny: Permission
 
@@ -274,7 +278,7 @@ class Channel:
     type: ChannelType
     guild_id: Optional[Snowflake] = None
     position: Optional[int] = None
-    permission_overwrites: Optional[List[Overwrite]] = None
+    permission_overwrites: Optional[List[Overwrite]] = None  # ?
     name: Optional[str] = None
     topic: Optional[str] = None
     nsfw: Optional[bool] = None

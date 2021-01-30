@@ -72,8 +72,9 @@ class DiscordPostRequest(QObject):
     def handle_finished(self, reply: QNetworkReply):
         jsonsak = json.loads(str(reply.readAll().data(), "utf-8"))
         print(jsonsak)
+        print("=====>")
         channel = map_types(Channel, jsonsak)
-        print(channel.last_pin_timestamp)
+        print(channel)
 
         self.finished.emit(jsonsak)
 
@@ -81,7 +82,7 @@ class DiscordPostRequest(QObject):
 with open("token.txt") as file:
     token = file.read().strip()
 sak = DiscordPostRequest(
-    "https://discord.com/api/v8/channels/409073849905315847", token)
+    "https://discord.com/api/v8/channels/732359989196357646", token)
 # sak.finished.connect(print)
 # sak.send()
 while 1:

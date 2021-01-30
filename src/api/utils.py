@@ -3,7 +3,9 @@ from typing import Callable, TypeVar, Any, cast, get_type_hints, get_args, Dict,
 T = TypeVar("T")
 
 
-def map_types(meta: Callable[..., T], data: Any) -> T:
+def map_types(meta: Callable[..., T], data: Any, depth=0) -> T:
+    print("  "*depth, meta, data)
+
     """
     Takes in an object and a dictionary from a json response and parses it using typedefs from the object into that object, recursively
 
@@ -48,7 +50,8 @@ def map_types(meta: Callable[..., T], data: Any) -> T:
             # This is due to Optional arguments (Union[T, None])
             for _type in types:
                 try:
-                    first = map_types(_type, item)
+                    first = map_types(_type, item, depth+1)
+                    break
                 except TypeError:
                     continue
             new.append(first)
@@ -73,7 +76,8 @@ def map_types(meta: Callable[..., T], data: Any) -> T:
             # This is due to Optional arguments (Union[T, None])
             for __type in types:
                 try:
-                    first = map_types(__type, data[field])
+                    first = map_types(__type, data[field], depth+1)
+                    break
                 except TypeError:
                     continue
             new[field] = first
