@@ -15,7 +15,7 @@ Method = Literal[
 API_VERSION = 8
 API_ENTRY = f"https://discord.com/api/v{API_VERSION}/"
 
-TOKEN_FILE = Path(__file__).joinpath("../token.txt").resolve()
+TOKEN_FILE = Path(__file__).joinpath("../../token.txt").resolve()
 
 with TOKEN_FILE.open() as file:
     TOKEN = file.read().strip()

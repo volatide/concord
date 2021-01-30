@@ -4,7 +4,7 @@ T = TypeVar("T")
 
 
 def map_types(meta: Callable[..., T], data: Any, depth=0) -> T:
-    print("  "*depth, meta, data)
+    # print("  "*depth, meta, data)
 
     """
     Takes in an object and a dictionary from a json response and parses it using typedefs from the object into that object, recursively
