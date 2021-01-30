@@ -3,8 +3,8 @@ from typing import Callable, TypeVar, Any, cast, get_type_hints, get_args, Dict,
 T = TypeVar("T")
 
 
-def map_types(meta: Callable[..., T], data: Any, depth=0) -> T:
-    # print("  "*depth, meta, data)
+def map_types(meta: Callable[..., T], data: Any, _depth=0) -> T:
+    # print("  "*_depth, meta, data)
 
     """
     Takes in an object and a dictionary from a json response and parses it using typedefs from the object into that object, recursively
@@ -29,6 +29,10 @@ def map_types(meta: Callable[..., T], data: Any, depth=0) -> T:
     ```
     """
 
+    if type(data) == dict:
+        if "errors" in data:
+            raise RequestError(**data)
+
     # If the data is in it's base form, cast it to that (example, int, Snowflake)
     if type(data) not in [dict, list, tuple]:
 
@@ -50,7 +54,7 @@ def map_types(meta: Callable[..., T], data: Any, depth=0) -> T:
             # This is due to Optional arguments (Union[T, None])
             for _type in types:
                 try:
-                    first = map_types(_type, item, depth+1)
+                    first = map_types(_type, item, _depth+1)
                     break
                 except TypeError:
                     continue
@@ -65,6 +69,8 @@ def map_types(meta: Callable[..., T], data: Any, depth=0) -> T:
     if type(data) == dict:
         new = {}
         hints: Dict[str, Type] = get_type_hints(meta)
+        if not hints:
+            return data
         for field, _type in hints.items():
             first = None
             if field not in data:
@@ -76,7 +82,7 @@ def map_types(meta: Callable[..., T], data: Any, depth=0) -> T:
             # This is due to Optional arguments (Union[T, None])
             for __type in types:
                 try:
-                    first = map_types(__type, data[field], depth+1)
+                    first = map_types(__type, data[field], _depth+1)
                     break
                 except TypeError:
                     continue
@@ -85,3 +91,17 @@ def map_types(meta: Callable[..., T], data: Any, depth=0) -> T:
         # Create object from own meta with named arguments
         return meta(**new)
     return meta(**data)
+
+
+class RequestError(Exception):
+    def __init__(self, code: int, message: str, errors: dict = {}, *args, **kwargs):
+        self.code = code
+        self.message = message
+        self.errors = errors
+
+        super().__init__(self.message)
+
+    def __repr__(self):
+        return f"RequestError(code={repr(self.code)},message={repr(self.message)},errors={repr(self.errors)}"
+    
+    __str__ = __repr__

@@ -21,11 +21,11 @@ with TOKEN_FILE.open() as file:
     TOKEN = file.read().strip()
 
 class APIRequest:
-    def __init__(self, url, method: Method = "GET", data: Dict[str, Any] = {}):
+    def __init__(self, url, method: Method = "GET", data: Dict[str, Any] = {}, *, skip_auth: bool = False):
         self.url = API_ENTRY + url
         self.method = method
         self.data = data
-        self.headers = {"Authorization": TOKEN}
+        self.headers: Dict[str, Any] = {"Authorization": TOKEN} if not skip_auth else {}
 
     def data_as_query_str(self) -> str:
         return urlencode(self.data)
