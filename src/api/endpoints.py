@@ -37,7 +37,7 @@ def get_channel(channel_id: int) -> DiscordPromise[Channel]:
     return DiscordPromise(QRequester(f"channels/{channel_id}", Channel))
 
 
-def modify_channel(channel_id: int, data: dict) -> DiscordPromise[Channel]:
+def edit_channel(channel_id: int, data: dict) -> DiscordPromise[Channel]:
     """
     https://discord.com/developers/docs/resources/channel#modify-channel
     """
@@ -56,6 +56,15 @@ def create_message(channel_id: int, data: dict) -> DiscordPromise[Message]:
     return DiscordPromise(QRequester(
         f"channels/{channel_id}/messages", Message, "POST", data))
 
+
+def edit_message(channel_id: int, message_id: int, data: dict) -> DiscordPromise[Message]:
+    return DiscordPromise(QRequester(
+        f"channels/{channel_id}/messages/{message_id}", Message, "PATCH", data))
+
+
+def delete_message(channel_id: int, message_id: int) -> DiscordPromise[None]:
+    return DiscordPromise(QRequester(
+        f"channels/{channel_id}/messages/{message_id}", Message, "DELETE"))
 
 def create_reaction(channel_id: int, message_id: int, emoji: str) -> DiscordPromise[None]:
     # raise NotImplementedError("Emoji does not do things")
