@@ -1,48 +1,58 @@
-from typing import Any, Callable
+from __future__ import annotations
+from typing import Any, Callable, Generic, TypeVar
 from .interfaces import Channel, Emoji, Message, Snowflake
-from .utils import RequestError
+from .utils import RequestError, RequestSuccess
 from .qrequester import QRequester
 
 
-def _default_catch(error: RequestError):
-    raise error
+T = TypeVar("T")
 
 
-def get_channel(channel_id: int, then: Callable[[Channel], Any], catch: Callable[[RequestError], Any] = _default_catch):
-    requester = QRequester(f"channels/{channel_id}", Channel)
-    requester.finished.connect(then)
-    requester.failed.connect(catch)
+class DiscordPromise(Generic[T]):
+    def _default_catch(self, error: RequestError):
+        if self._has_catch:
+            raise error
+
+    def __init__(self, requester: QRequester):
+        self.requester = requester
+        self.requester.failed.connect(self._default_catch)
+        self._has_catch = False
+
+    def then(self, function: Callable[[RequestSuccess[T]], Any]) -> DiscordPromise[T]:
+        self.requester.finished.connect(function)
+        return self
+
+    def catch(self, function: Callable[[RequestError], Any]) -> DiscordPromise[T]:
+        self.requester.failed.connect(function)
+        self._has_catch = True
+        return self
 
 
-def modify_channel(channel_id: int, data: dict, then: Callable[[Channel], Any], catch: Callable[[RequestError], Any] = _default_catch):
+def get_channel(channel_id: int) -> DiscordPromise[Channel]:
+    return DiscordPromise(QRequester(f"channels/{channel_id}", Channel))
+
+
+def modify_channel(channel_id: int, data: dict) -> DiscordPromise[Channel]:
     """
     https://discord.com/developers/docs/resources/channel#modify-channel
     """
-    requester = QRequester(f"channels/{channel_id}", Channel, "PATCH", data)
-    requester.finished.connect(then)
-    requester.failed.connect(catch)
+    return DiscordPromise(QRequester(f"channels/{channel_id}", Channel, "PATCH", data))
 
 
-def delete_channel(channel_id: int, then: Callable[[Channel], Any], catch: Callable[[RequestError], Any] = _default_catch):
-    requester = QRequester(f"channels/{channel_id}", Channel, "DELETE")
-    requester.finished.connect(then)
-    requester.failed.connect(catch)
+def delete_channel(channel_id: int) -> DiscordPromise[Channel]:
+    return DiscordPromise(QRequester(f"channels/{channel_id}", Channel, "DELETE"))
 
 
-def create_message(channel_id: int, data: dict, then: Callable[[Channel], Any], catch: Callable[[RequestError], Any] = _default_catch):
+def create_message(channel_id: int, data: dict) -> DiscordPromise[Message]:
     """
     https://discord.com/developers/docs/resources/channel#create-message
     """
 
-    requester = QRequester(
-        f"channels/{channel_id}/messages", Message, "POST", data)
-    requester.finished.connect(then)
-    requester.failed.connect(catch)
+    return DiscordPromise(QRequester(
+        f"channels/{channel_id}/messages", Message, "POST", data))
 
 
-def create_reaction(channel_id: int, message_id: int, emoji: str, then: Callable, catch: Callable[[RequestError], Any] = _default_catch):
+def create_reaction(channel_id: int, message_id: int, emoji: str) -> DiscordPromise[None]:
     # raise NotImplementedError("Emoji does not do things")
-    requester = QRequester(
-        f"channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me", Channel, "PUT")
-    requester.finished.connect(then)
-    requester.failed.connect(catch)
+    return DiscordPromise(QRequester(
+        f"channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me", Channel, "PUT"))

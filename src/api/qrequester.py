@@ -1,14 +1,18 @@
-from typing import Any, Callable, Dict, TypeVar
+from typing import Any, Callable, Dict, Tuple, TypeVar
 from PySide2.QtCore import QByteArray, QUrl, QObject, SIGNAL, Signal, Slot
 from PySide2.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
-from .utils import RequestError, map_types, APIRequest, Method
+from .utils import RequestError, RequestSuccess, RequestInfo, map_types, APIRequest, Method
 import json
 
 _manager = QNetworkAccessManager()
+class QRequesterError:
+    def __init__(self, code: int, message: str):
+        self.code = code
+        self.message = message
 
 class QRequester(QObject):
     # Is fired when the reply finishes and returns json data
-    finished = Signal(object)
+    finished = Signal(RequestSuccess)
     failed = Signal(RequestError)
 
     def __init__(self, url, meta: Callable, method: Method = "GET", data: dict = {}, *, skip_auth: bool = False) -> None:
@@ -36,8 +40,15 @@ class QRequester(QObject):
 
     @Slot(QNetworkReply)
     def _handle_request(self, reply: QNetworkReply):
-        data: dict = json.loads(str(reply.readAll().data(), "ascii"))
-        try:
-            self.finished.emit(map_types(self.meta, data))
-        except RequestError as error:
-            self.failed.emit(error)
+        info = RequestInfo(reply.attribute(QNetworkRequest.Attribute.HttpStatusCodeAttribute))
+        content = str(reply.readAll().data(), "ascii")
+        if content:
+            data: dict = json.loads(content)
+            try:
+                self.finished.emit(RequestSuccess(map_types(self.meta, data), info))
+            except RequestError as error:
+                error.info = info
+                self.failed.emit(error)
+        else:
+            self.finished.emit(None)
+        

@@ -1,4 +1,4 @@
-from typing import Callable, Literal, TypeVar, Any, cast, get_type_hints, get_args, Dict, Type
+from typing import Callable, Generic, Literal, TypeVar, Any, cast, get_type_hints, get_args, Dict, Type
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -120,8 +120,13 @@ def map_types(meta: Callable[..., T], data: Any, _depth=0) -> T:
         return meta(**new)
     return meta(**data)
 
+class RequestInfo:
+    def __init__(self, httpCode: int):
+        self.httpCode = httpCode
 
 class RequestError(Exception):
+    info: RequestInfo
+    
     def __init__(self, code: int, message: str, errors: dict = {}, *args, **kwargs):
         self.code = code
         self.message = message
@@ -133,3 +138,8 @@ class RequestError(Exception):
         return f"RequestError(code={repr(self.code)},message={repr(self.message)},errors={repr(self.errors)}"
     
     __str__ = __repr__
+
+class RequestSuccess(Generic[T]):
+    def __init__(self, data: T, info: RequestInfo):
+        self.data = data
+        self.info = info

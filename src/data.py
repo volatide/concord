@@ -17,8 +17,8 @@ class LocalVoiceState:
     deaf: bool = False
 
 class State(QObject):
-    new_channel = Signal(Channel)  # Also means there are new messages
-    new_guild = Signal(Guild)  # Also means that there is a new channel
+    new_channel = Signal(Optional[Channel])  # Also means there are new messages
+    new_guild = Signal(Optional[Guild])  # Also means that there is a new channel
     new_voice_state = Signal(LocalVoiceState)
     change_settings_open = Signal(bool)
 

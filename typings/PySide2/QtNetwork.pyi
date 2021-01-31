@@ -1485,7 +1485,7 @@ class QNetworkReply(PySide2.QtCore.QIODevice):
     def url(self) -> PySide2.QtCore.QUrl: ...
     def writeData(self, data:bytes, len:int) -> int: ...
 
-    finished = PySide2.QtCore.Signal(PySide2.QtNetwork.QNetworkReply)
+    finished = PySide2.QtCore.Signal()
 
 
 class QNetworkRequest(Shiboken.Object):

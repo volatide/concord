@@ -2,14 +2,16 @@ from signal import SIGINT, signal
 import sys
 from types import SimpleNamespace
 from typing import Dict, Optional, Union
-from PySide2.QtCore import QTextStream, Slot
+from PySide2.QtCore import QCoreApplication, QTextStream, Slot
 from PySide2.QtWidgets import QApplication
 from api.interfaces import Channel, Emoji, Guild, Member, Role, User
 from api.qrequester import QRequester
 from dataclasses import dataclass
 from time import sleep
 
-app = QApplication(sys.argv)
+from api.utils import RequestSuccess
+
+app = QCoreApplication(sys.argv)
 
 # sak = QRequester("channels/732359989196357646", Channel)
 # sak.finished.connect(print)
@@ -30,15 +32,21 @@ class LoginResp:
 #     code: int
 #     errors: Errors
 ticketid = None
-@Slot(dict)
-def handle_sms(resp: dict):
+# @Slot(dict)
+
+def handle_token(raw_resp: RequestSuccess[dict]):
+    print("Token:", raw_resp.data["token"])
+
+def handle_sms(raw_resp: RequestSuccess[dict]):
+    resp = raw_resp.data
     print("Sms sent to:", resp["phone"])
     sak = QRequester("auth/mfa/sms", dict, "POST", {"ticket": ticketid, "code": input("Enter sms: ")}, skip_auth=True)
-    sak.finished.connect(lambda x: print("Token:", x["token"]))
+    sak.finished.connect(handle_token)
 
 
-@Slot(LoginResp)
-def handle_login(resp: LoginResp):
+# @Slot(RequestSuccess[LoginResp])
+def handle_login(raw_resp: RequestSuccess[LoginResp]):
+    resp = raw_resp.data
     print(resp)
     if resp.token:
         print(resp.token)
@@ -52,7 +60,7 @@ def handle_login(resp: LoginResp):
         ticketid = resp.ticket
     elif resp.mfa:
         sak = QRequester("auth/mfa/totp", dict, "POST", {"ticket": resp.ticket, "code": input("Enter MFA code: ")}, skip_auth=True)
-        sak.finished.connect(lambda x: print("Token:", x["token"]))
+        sak.finished.connect(handle_token)
 
         sak.failed.connect(print)
     else:
@@ -71,3 +79,5 @@ def sigint_handler(*args):
     QApplication.quit()
 
 signal(SIGINT, sigint_handler)
+
+sys.exit(app.exec_())
