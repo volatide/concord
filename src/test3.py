@@ -6,7 +6,7 @@ from PySide2.QtWebSockets import QWebSocket
 from PySide2.QtWidgets import QApplication
 import sys
 import json
-from api.endpoints import TOKEN
+from api.utils import TOKEN
 from zlib import decompressobj
 from time import sleep
 

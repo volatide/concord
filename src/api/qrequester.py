@@ -1,8 +1,7 @@
 from typing import Any, Callable, Dict, TypeVar
 from PySide2.QtCore import QByteArray, QUrl, QObject, SIGNAL, Signal, Slot
 from PySide2.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
-from .endpoints import APIRequest, Method
-from .utils import RequestError, map_types
+from .utils import RequestError, map_types, APIRequest, Method
 import json
 
 _manager = QNetworkAccessManager()
@@ -41,6 +40,4 @@ class QRequester(QObject):
         try:
             self.finished.emit(map_types(self.meta, data))
         except RequestError as error:
-            # if not self.receivers(SIGNAL("failed(utils.RequestError)").encode()):
-            #     print(error)
             self.failed.emit(error)

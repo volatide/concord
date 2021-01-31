@@ -1,31 +1,48 @@
+from typing import Any, Callable
+from .interfaces import Channel, Emoji, Message, Snowflake
+from .utils import RequestError
+from .qrequester import QRequester
 
-from typing import Any, AnyStr, Dict, Literal, Optional, Type
-from .interfaces import ChannelType
-from urllib.parse import urlencode
-from pathlib import Path
 
-Method = Literal[
-    "GET", "POST", 
-    "PATCH", "PUT", 
-    "DELETE", "HEAD",
-    "CONNECT", "OPTIONS",
-    "TRACE"
-]
+def _default_catch(error: RequestError):
+    raise error
 
-API_VERSION = 8
-API_ENTRY = f"https://discord.com/api/v{API_VERSION}/"
 
-TOKEN_FILE = Path(__file__).joinpath("../../token.txt").resolve()
+def get_channel(channel_id: int, then: Callable[[Channel], Any], catch: Callable[[RequestError], Any] = _default_catch):
+    requester = QRequester(f"channels/{channel_id}", Channel)
+    requester.finished.connect(then)
+    requester.failed.connect(catch)
 
-with TOKEN_FILE.open() as file:
-    TOKEN = file.read().strip()
 
-class APIRequest:
-    def __init__(self, url, method: Method = "GET", data: Dict[str, Any] = {}, *, skip_auth: bool = False):
-        self.url = API_ENTRY + url
-        self.method = method
-        self.data = data
-        self.headers: Dict[str, Any] = {"Authorization": TOKEN} if not skip_auth else {}
+def modify_channel(channel_id: int, data: dict, then: Callable[[Channel], Any], catch: Callable[[RequestError], Any] = _default_catch):
+    """
+    https://discord.com/developers/docs/resources/channel#modify-channel
+    """
+    requester = QRequester(f"channels/{channel_id}", Channel, "PATCH", data)
+    requester.finished.connect(then)
+    requester.failed.connect(catch)
 
-    def data_as_query_str(self) -> str:
-        return urlencode(self.data)
+
+def delete_channel(channel_id: int, then: Callable[[Channel], Any], catch: Callable[[RequestError], Any] = _default_catch):
+    requester = QRequester(f"channels/{channel_id}", Channel, "DELETE")
+    requester.finished.connect(then)
+    requester.failed.connect(catch)
+
+
+def create_message(channel_id: int, data: dict, then: Callable[[Channel], Any], catch: Callable[[RequestError], Any] = _default_catch):
+    """
+    https://discord.com/developers/docs/resources/channel#create-message
+    """
+
+    requester = QRequester(
+        f"channels/{channel_id}/messages", Message, "POST", data)
+    requester.finished.connect(then)
+    requester.failed.connect(catch)
+
+
+def create_reaction(channel_id: int, message_id: int, emoji: str, then: Callable, catch: Callable[[RequestError], Any] = _default_catch):
+    # raise NotImplementedError("Emoji does not do things")
+    requester = QRequester(
+        f"channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me", Channel, "PUT")
+    requester.finished.connect(then)
+    requester.failed.connect(catch)
