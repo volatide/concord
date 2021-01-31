@@ -8772,6 +8772,8 @@ class QTimer(PySide2.QtCore.QObject):
     def timerId(self) -> int: ...
     def timerType(self) -> PySide2.QtCore.Qt.TimerType: ...
 
+    timeout: PySide2.QtCore.Signal
+
 
 class QTimerEvent(PySide2.QtCore.QEvent):
 

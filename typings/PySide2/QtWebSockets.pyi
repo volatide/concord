@@ -118,6 +118,21 @@ class QWebSocket(PySide2.QtCore.QObject):
     def state(self) -> PySide2.QtNetwork.QAbstractSocket.SocketState: ...
     def version(self) -> PySide2.QtWebSockets.QWebSocketProtocol.Version: ...
 
+    aboutToClose: PySide2.QtCore.Signal
+    binaryFrameReceived: PySide2.QtCore.Signal
+    binaryMessageReceived: PySide2.QtCore.Signal
+    bytesWritten: PySide2.QtCore.Signal
+    connected: PySide2.QtCore.Signal
+    disconnected: PySide2.QtCore.Signal
+    error: PySide2.QtCore.Signal
+    pong: PySide2.QtCore.Signal
+    preSharedKeyAuthenticationRequired: PySide2.QtCore.Signal
+    proxyAuthenticationRequired: PySide2.QtCore.Signal
+    readChannelFinished: PySide2.QtCore.Signal
+    stateChanged: PySide2.QtCore.Signal
+    textFrameReceived: PySide2.QtCore.Signal
+    textMessageReceived: PySide2.QtCore.Signal
+
 
 class QWebSocketCorsAuthenticator(Shiboken.Object):
 
