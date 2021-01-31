@@ -1,15 +1,18 @@
 from api.endpoints import get_channel
 from PySide2.QtCore import QCoreApplication
 import sys
-from signal import signal, SIGINT
 
 app = QCoreApplication(sys.argv)
 
-get_channel(574383922167808003).then(print)
 
-def sigint_handler(*args):
+def handle_response(data, info):
+    print(data, info)
     app.quit()
 
-signal(SIGINT, sigint_handler)
+def catch_err(error, info):
+    app.quit()
+    raise error
+
+get_channel(574383922167808003).then(handle_response).catch(catch_err)
 
 sys.exit(app.exec_())

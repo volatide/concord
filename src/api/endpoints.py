@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import Any, Callable, Generic, TypeVar
+
+from PySide2.QtCore import Slot
 from .interfaces import Channel, Emoji, Message, Snowflake
 from .utils import RequestError, RequestInfo, RequestSuccess
 from .qrequester import QRequester
@@ -9,8 +11,11 @@ T = TypeVar("T")
 
 
 class DiscordPromise(Generic[T]):
-    def _default_catch(self, error: RequestError):
-        if self._has_catch:
+
+    # TODO: Fix this, should throw error if no catch handler
+    def _default_catch(self, error: RequestError, info: RequestInfo):
+        print("Catch")
+        if not self._has_catch:
             raise error
 
     def __init__(self, requester: QRequester):

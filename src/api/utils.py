@@ -58,7 +58,7 @@ def map_types(meta: Callable[..., T], data: Any, _depth=0) -> T:
     """
 
     if type(data) == dict:
-        if "errors" in data:
+        if ("code" in data and "message" in data) or ("errors" in data):
             raise RequestError(**data)
 
     # If the data is in it's base form, cast it to that (example, int, Snowflake)
