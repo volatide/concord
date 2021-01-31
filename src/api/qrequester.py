@@ -12,8 +12,8 @@ class QRequesterError:
 
 class QRequester(QObject):
     # Is fired when the reply finishes and returns json data
-    finished = Signal(RequestSuccess)
-    failed = Signal(RequestError)
+    finished = Signal(RequestSuccess, RequestInfo)
+    failed = Signal(RequestError, RequestInfo)
 
     def __init__(self, url, meta: Callable, method: Method = "GET", data: dict = {}, *, skip_auth: bool = False) -> None:
         super().__init__()
@@ -45,10 +45,9 @@ class QRequester(QObject):
         if content:
             data: dict = json.loads(content)
             try:
-                self.finished.emit(RequestSuccess(map_types(self.meta, data), info))
+                self.finished.emit(map_types(self.meta, data), info)
             except RequestError as error:
-                error.info = info
-                self.failed.emit(error)
+                self.failed.emit(error, info)
         else:
-            self.finished.emit(None)
+            self.finished.emit(None, info)
         

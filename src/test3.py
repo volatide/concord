@@ -69,7 +69,7 @@ heartbeat_timer.timeout.connect(send_heartbeat)
 #     sleep(0.1)
 
 def sigint_handler(*args):
-    QApplication.quit()
+    app.quit()
 
 signal(SIGINT, sigint_handler)
 

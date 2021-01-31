@@ -121,8 +121,11 @@ def map_types(meta: Callable[..., T], data: Any, _depth=0) -> T:
     return meta(**data)
 
 class RequestInfo:
-    def __init__(self, httpCode: int):
-        self.httpCode = httpCode
+    def __init__(self, statusCode: int):
+        self.statusCode = statusCode
+    
+    def __repr__(self):
+        return f"RequestInfo(statusCode={self.statusCode})"
 
 class RequestError(Exception):
     info: RequestInfo

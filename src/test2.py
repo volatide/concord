@@ -9,7 +9,7 @@ from api.qrequester import QRequester
 from dataclasses import dataclass
 from time import sleep
 
-from api.utils import RequestSuccess
+from api.utils import RequestInfo, RequestSuccess
 
 app = QCoreApplication(sys.argv)
 
@@ -34,19 +34,17 @@ class LoginResp:
 ticketid = None
 # @Slot(dict)
 
-def handle_token(raw_resp: RequestSuccess[dict]):
-    print("Token:", raw_resp.data["token"])
+def handle_token(resp: dict, info: RequestInfo):
+    print("Token:", resp["token"])
 
-def handle_sms(raw_resp: RequestSuccess[dict]):
-    resp = raw_resp.data
+def handle_sms(resp: dict, info: RequestInfo):
     print("Sms sent to:", resp["phone"])
     sak = QRequester("auth/mfa/sms", dict, "POST", {"ticket": ticketid, "code": input("Enter sms: ")}, skip_auth=True)
     sak.finished.connect(handle_token)
 
 
 # @Slot(RequestSuccess[LoginResp])
-def handle_login(raw_resp: RequestSuccess[LoginResp]):
-    resp = raw_resp.data
+def handle_login(resp: LoginResp, info: RequestInfo):
     print(resp)
     if resp.token:
         print(resp.token)
@@ -76,7 +74,7 @@ loginthing.failed.connect(print)
 #     sleep(0.1)
 
 def sigint_handler(*args):
-    QApplication.quit()
+    app.quit()
 
 signal(SIGINT, sigint_handler)
 

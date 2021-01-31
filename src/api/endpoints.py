@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, Callable, Generic, TypeVar
 from .interfaces import Channel, Emoji, Message, Snowflake
-from .utils import RequestError, RequestSuccess
+from .utils import RequestError, RequestInfo, RequestSuccess
 from .qrequester import QRequester
 
 
@@ -18,11 +18,11 @@ class DiscordPromise(Generic[T]):
         self.requester.failed.connect(self._default_catch)
         self._has_catch = False
 
-    def then(self, function: Callable[[RequestSuccess[T]], Any]) -> DiscordPromise[T]:
+    def then(self, function: Callable[[T, RequestInfo], Any]) -> DiscordPromise[T]:
         self.requester.finished.connect(function)
         return self
 
-    def catch(self, function: Callable[[RequestError], Any]) -> DiscordPromise[T]:
+    def catch(self, function: Callable[[RequestError, RequestInfo], Any]) -> DiscordPromise[T]:
         self.requester.failed.connect(function)
         self._has_catch = True
         return self
