@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from enum import Enum
 from dateutil.parser import parse as parsetime
 
+DISCORD_EPOCH = 1420070400000
+
 
 class MessageNotificationLevel(Enum):
     ALL_MESSAGES = 0
@@ -137,18 +139,37 @@ class OverwriteType(Enum):
     ROLE = 0
     MEMBER = 1
 
+
 UserFlags = int
 ActivityFlags = int
 MessageFlags = int
 
 
 class Snowflake(int):
+    @staticmethod
+    def from_timestamp_ms(timestamp_ms: int) -> Snowflake:
+        return Snowflake((timestamp_ms - DISCORD_EPOCH) << 22)
+
+    @staticmethod
+    def from_timestamp(timestamp_s: Union[int, float]) -> Snowflake:
+        """
+        Create a Snowflake object from unix timestamp in seconds
+        """
+        return Snowflake.from_timestamp_ms(int(timestamp_s*1000))
+
+    @staticmethod
+    def from_date(date: datetime) -> Snowflake:
+        return Snowflake.from_timestamp(date.timestamp())
+
     def __repr__(self) -> str:
         return f"Snowflake({super().__repr__()})"
 
     @property
     def time(self) -> datetime:
-        unix_time = ((self >> 22) + 1420070400000)/1000
+        """
+        Returns a datetime object representing the time of when the Snowflake was created
+        """
+        unix_time = ((self >> 22) + DISCORD_EPOCH)/1000
         return datetime.fromtimestamp(unix_time)
 
     @property
@@ -170,6 +191,7 @@ class ISO8601(datetime):
     """
     def __new__(cls, timestr):
         return parsetime(timestr)
+
 
 class Permission(int):
     def __repr__(self) -> str:
