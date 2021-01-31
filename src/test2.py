@@ -1,3 +1,4 @@
+from signal import SIGINT, signal
 import sys
 from types import SimpleNamespace
 from typing import Dict, Optional, Union
@@ -6,6 +7,8 @@ from PySide2.QtWidgets import QApplication
 from api.interfaces import Channel, Emoji, Guild, Member, Role, User
 from api.qrequester import QRequester
 from dataclasses import dataclass
+from time import sleep
+
 app = QApplication(sys.argv)
 
 # sak = QRequester("channels/732359989196357646", Channel)
@@ -61,6 +64,10 @@ loginthing = QRequester("auth/login", LoginResp, "POST", {"email": email, "passw
 loginthing.finished.connect(handle_login)
 loginthing.failed.connect(print)
 
-while 1:
-    # print("Processing event")
-    app.processEvents()
+# while 1:
+#     sleep(0.1)
+
+def sigint_handler(*args):
+    QApplication.quit()
+
+signal(SIGINT, sigint_handler)
