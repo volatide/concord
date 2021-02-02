@@ -1,14 +1,10 @@
 from signal import SIGINT, signal
 from PySide2.QtCore import QCoreApplication, QUrl, QTimer
-# from PySide2.QtCore.Qt import TimerType
-import PySide2.QtCore
 from PySide2.QtWebSockets import QWebSocket
-from PySide2.QtWidgets import QApplication
 import sys
 import json
 from api.utils import TOKEN
 from zlib import decompressobj
-from time import sleep
 
 app = QCoreApplication(sys.argv)
 
@@ -36,7 +32,6 @@ def print_text_message(message):
         socket.sendTextMessage(json.dumps(login))
         interval = data["d"]["heartbeat_interval"]
         print("Sending heartbeats evert", interval/1000, "seconds")
-        # heartbeat_timer.setInterval()
         heartbeat_timer.start(interval)
     
     if data["op"] == 1:
