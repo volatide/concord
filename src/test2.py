@@ -13,6 +13,9 @@ app = QCoreApplication(sys.argv)
 email = input("Enter email: ")
 password = getpass("Enter password: ")
 
+def catcher(*args):
+    print(*args)
+    app.quit()
 
 def process_token(token: str):
     print("Token: ", token)
@@ -28,7 +31,7 @@ def handle_token(resp: MfaAuthFinishedResponse, info):
 def handle_sms(ticket: Optional[str], resp: SmsAuthResponse, info):
     print("Sms sent to", resp.phone)
     code = input("Enter mfa code from sms: ")
-    submit_login_sms(ticket or "", code).then(handle_token)
+    submit_login_sms(ticket or "", code).then(handle_token).catch(catcher)
 
 
 def handle_login(resp: LoginResponse, info):
@@ -37,14 +40,14 @@ def handle_login(resp: LoginResponse, info):
     elif resp.ticket:
         if resp.sms:
             send_login_sms(resp.ticket).then(
-                lambda x, y: handle_sms(resp.ticket, x, y))
+                lambda x, y: handle_sms(resp.ticket, x, y)).catch(catcher)
         elif resp.mfa:
             code = input("Enter mfa code from totp app: ")
-            submit_totp_code(resp.ticket, code).then(handle_token)
+            submit_totp_code(resp.ticket, code).then(handle_token).catch(catcher)
     else:
         raise ValueError("No ticket for some reason")
 
 
-create_login(email, password).then(handle_login)
+create_login(email, password).then(handle_login).catch(catcher)
 
 sys.exit(app.exec_())
