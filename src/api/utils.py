@@ -17,12 +17,16 @@ API_ENTRY = f"https://discord.com/api/v{API_VERSION}/"
 
 TOKEN_FILE = Path(__file__).joinpath("../../token.txt").resolve()
 
-with TOKEN_FILE.open() as file:
-    TOKEN = file.read().strip()
+TOKEN = None
+if TOKEN_FILE.exists():
+    with TOKEN_FILE.open() as file:
+        TOKEN = file.read().strip()
 
 
 class APIRequest:
     def __init__(self, url, method: Method = "GET", data: Dict[str, Any] = {}, *, skip_auth: bool = False):
+        if not (skip_auth or TOKEN):
+            raise ValueError("Can not run functions unauthenticated without skit_auth=True on api requests")
         self.url = API_ENTRY + url
         self.method = method
         self.data = data
@@ -121,6 +125,12 @@ def map_types(meta: Callable[..., T], data: Any, _depth=0) -> T:
         return meta(**new)
     return meta(**data)
 
+
+def save_token(token: str):
+    global TOKEN
+    TOKEN = token
+    with TOKEN_FILE.open("w") as file:
+        file.write(token)
 
 class RequestInfo:
     def __init__(self, statusCode: int):

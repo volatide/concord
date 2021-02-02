@@ -5,6 +5,8 @@ from api.endpoints import create_login, send_login_sms, submit_login_sms, submit
 from api.interfaces import LoginResponse, Member, MfaAuthFinishedResponse, SmsAuthResponse
 from getpass import getpass
 
+from api.utils import save_token
+
 
 app = QCoreApplication(sys.argv)
 
@@ -12,32 +14,37 @@ email = input("Enter email: ")
 password = getpass("Enter password: ")
 
 
-def handle_token2(resp: MfaAuthFinishedResponse, info):
-    print("Token:", resp.token)
+def process_token(token: str):
+    print("Token: ", token)
+    save_token(token)
+    print("Saved token!")
     app.quit()
 
 
-def handle_sms2(ticket: Optional[str], resp: SmsAuthResponse, info):
+def handle_token(resp: MfaAuthFinishedResponse, info):
+    process_token(resp.token)
+
+
+def handle_sms(ticket: Optional[str], resp: SmsAuthResponse, info):
     print("Sms sent to", resp.phone)
     code = input("Enter mfa code from sms: ")
-    submit_login_sms(ticket or "", code).then(handle_token2)
+    submit_login_sms(ticket or "", code).then(handle_token)
 
 
-def handle_login2(resp: LoginResponse, info):
+def handle_login(resp: LoginResponse, info):
     if resp.token:
-        print("Token:", resp.token)
-        app.quit()
+        process_token(resp.token)
     elif resp.ticket:
         if resp.sms:
             send_login_sms(resp.ticket).then(
-                lambda x, y: handle_sms2(resp.ticket, x, y))
+                lambda x, y: handle_sms(resp.ticket, x, y))
         elif resp.mfa:
             code = input("Enter mfa code from totp app: ")
-            submit_totp_code(resp.ticket, code).then(handle_token2)
+            submit_totp_code(resp.ticket, code).then(handle_token)
     else:
         raise ValueError("No ticket for some reason")
 
 
-create_login(email, password).then(handle_login2)
+create_login(email, password).then(handle_login)
 
 sys.exit(app.exec_())
