@@ -123,6 +123,9 @@ def map_types(meta: Callable[..., T], data: Any, _depth=0) -> T:
 class RequestInfo:
     def __init__(self, statusCode: int):
         self.statusCode = statusCode
+        self.ok: bool = False
+        if 200 <= statusCode < 400:
+            self.ok = True
     
     def __repr__(self):
         return f"RequestInfo(statusCode={self.statusCode})"
