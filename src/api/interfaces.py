@@ -608,3 +608,21 @@ class Message:
     flags: Optional[MessageFlags] = None
     stickers: Optional[List[Sticker]] = None
     referenced_message: Optional[Message] = None  # ?
+
+
+@dataclass
+class LoginResponse:
+    token: Optional[str]
+    mfa: bool
+    sms: bool
+    ticket: Optional[str]
+
+
+@dataclass
+class SmsAuthResponse:
+    phone: str
+
+
+@dataclass
+class MfaAuthFinishedResponse:
+    token: str

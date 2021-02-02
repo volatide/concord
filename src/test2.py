@@ -1,81 +1,38 @@
-from signal import SIGINT, signal
 import sys
-from types import SimpleNamespace
-from typing import Dict, Optional, Union
-from PySide2.QtCore import QCoreApplication, QTextStream, Slot
-from PySide2.QtWidgets import QApplication
-from api.interfaces import Channel, Emoji, Guild, Member, Role, User
-from api.qrequester import QRequester
-from dataclasses import dataclass
-from time import sleep
+from typing import Optional
+from PySide2.QtCore import QCoreApplication
+from api.endpoints import create_login, send_login_sms, submit_login_sms, submit_totp_code
+from api.interfaces import LoginResponse, Member, MfaAuthFinishedResponse, SmsAuthResponse
+from getpass import getpass
 
-from api.utils import RequestInfo, RequestSuccess
 
 app = QCoreApplication(sys.argv)
 
-# sak = QRequester("channels/732359989196357646", Channel)
-# sak.finished.connect(print)
-
-@dataclass
-class LoginResp:
-    token: Optional[str]
-    mfa: bool
-    sms: bool
-    ticket: Optional[str]
-
-# @dataclass
-# class Errors:
-
-
-# @dataclass
-# class ErrorResp:
-#     code: int
-#     errors: Errors
-ticketid = None
-# @Slot(dict)
-
-def handle_token(resp: dict, info: RequestInfo):
-    print("Token:", resp["token"])
-
-def handle_sms(resp: dict, info: RequestInfo):
-    print("Sms sent to:", resp["phone"])
-    sak = QRequester("auth/mfa/sms", dict, "POST", {"ticket": ticketid, "code": input("Enter sms: ")}, skip_auth=True)
-    sak.finished.connect(handle_token)
-
-
-# @Slot(RequestSuccess[LoginResp])
-def handle_login(resp: LoginResp, info: RequestInfo):
-    print(resp)
-    if resp.token:
-        print(resp.token)
-    elif resp.sms:
-        print("Sending sms")
-        sak = QRequester("auth/mfa/sms/send", dict, "POST", {"ticket": resp.ticket}, skip_auth=True)
-        sak.finished.connect(handle_sms)
-
-        sak.failed.connect(print)
-        global ticketid
-        ticketid = resp.ticket
-    elif resp.mfa:
-        sak = QRequester("auth/mfa/totp", dict, "POST", {"ticket": resp.ticket, "code": input("Enter MFA code: ")}, skip_auth=True)
-        sak.finished.connect(handle_token)
-
-        sak.failed.connect(print)
-    else:
-        raise ValueError("Login failed")
-
 email = input("Enter email: ")
-password = input("Enter password: ")
-loginthing = QRequester("auth/login", LoginResp, "POST", {"email": email, "password": password}, skip_auth=True)
-loginthing.finished.connect(handle_login)
-loginthing.failed.connect(print)
+password = getpass("Enter password: ")
 
-# while 1:
-#     sleep(0.1)
-
-def sigint_handler(*args):
+def handle_token2(resp: MfaAuthFinishedResponse, info):
+    print("Token:", resp.token)
     app.quit()
 
-signal(SIGINT, sigint_handler)
+def handle_sms2(ticket: Optional[str], resp: SmsAuthResponse, info):
+    print("Sms sent to", resp.phone)
+    code = input("Enter mfa code from sms: ")
+    submit_login_sms(ticket or "", code).then(handle_token2)
+
+def handle_login2(resp: LoginResponse, info):
+    if resp.token:
+        print("Token:", resp.token)
+        app.quit()
+    elif resp.ticket:
+        if resp.sms:
+            send_login_sms(resp.ticket).then(lambda x,y: handle_sms2(resp.ticket, x,y))
+        elif resp.mfa:
+            code = input("Enter mfa code from totp app: ")
+            submit_totp_code(resp.ticket, code).then(handle_token2)
+    else:
+        raise ValueError("No ticket for some reason")
+
+create_login(email, password).then(handle_login2)
 
 sys.exit(app.exec_())

@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, Callable, Generic, TypeVar
 
 from PySide2.QtCore import Slot
-from .interfaces import Channel, Emoji, Message, Snowflake
+from .interfaces import Channel, Emoji, LoginResponse, Message, MfaAuthFinishedResponse, SmsAuthResponse, Snowflake
 from .utils import RequestError, RequestInfo, RequestSuccess
 from .qrequester import QRequester
 
@@ -66,7 +66,24 @@ def delete_message(channel_id: int, message_id: int) -> DiscordPromise[None]:
     return DiscordPromise(QRequester(
         f"channels/{channel_id}/messages/{message_id}", Message, "DELETE"))
 
+
 def create_reaction(channel_id: int, message_id: int, emoji: str) -> DiscordPromise[None]:
     # raise NotImplementedError("Emoji does not do things")
     return DiscordPromise(QRequester(
         f"channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me", Channel, "PUT"))
+
+
+def create_login(email: str, password: str) -> DiscordPromise[LoginResponse]:
+    return DiscordPromise(QRequester(f"auth/login", LoginResponse, "POST", {"email": email, "password": password}, skip_auth=True))
+
+
+def send_login_sms(ticket: str) -> DiscordPromise[SmsAuthResponse]:
+    return DiscordPromise(QRequester(f"auth/mfa/sms/send", SmsAuthResponse, "POST", {"ticket": ticket}, skip_auth=True))
+
+
+def submit_login_sms(ticket: str, code: str) -> DiscordPromise[MfaAuthFinishedResponse]:
+    return DiscordPromise(QRequester(f"auth/mfa/sms", MfaAuthFinishedResponse, "POST", {"ticket": ticket, "code": code}, skip_auth=True))
+
+
+def submit_totp_code(ticket: str, code: str) -> DiscordPromise[MfaAuthFinishedResponse]:
+    return DiscordPromise(QRequester(f"auth/mfa/totp", MfaAuthFinishedResponse, "POST", {"ticket": ticket, "code": code}, skip_auth=True))
