@@ -13,7 +13,7 @@ def main(argv):
     app = QApplication(argv)
     view = QQuickView(QUrl.fromLocalFile(
         str(entry_path.joinpath("./view.qml").resolve())))
-    
+
     # engine = QQmlApplicationEngine()
     # engine.load()
     # login.setModality(Qt.WindowModality.ApplicationModal)

@@ -11,14 +11,18 @@ from paramiko import Channel
 
 from api.interfaces import Guild, Message, User
 
+
 @dataclass
 class LocalVoiceState:
     mute: bool = False
     deaf: bool = False
 
+
 class State(QObject):
-    new_channel = Signal(Optional[Channel])  # Also means there are new messages
-    new_guild = Signal(Optional[Guild])  # Also means that there is a new channel
+    # Also means there are new messages
+    new_channel = Signal(Optional[Channel])
+    # Also means that there is a new channel
+    new_guild = Signal(Optional[Guild])
     new_voice_state = Signal(LocalVoiceState)
     change_settings_open = Signal(bool)
 
@@ -42,12 +46,12 @@ class State(QObject):
     @property
     def guild(self):
         return self._guild
-    
+
     @guild.setter
     def guild(self, value: Guild):
         self._guild = value
         self.new_guild.emit(value)
-    
+
     @property
     def settings_open(self):
         return self._settings_open

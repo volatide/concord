@@ -5,8 +5,8 @@ from urllib.parse import urlencode
 T = TypeVar("T")
 
 Method = Literal[
-    "GET", "POST", 
-    "PATCH", "PUT", 
+    "GET", "POST",
+    "PATCH", "PUT",
     "DELETE", "HEAD",
     "CONNECT", "OPTIONS",
     "TRACE"
@@ -20,12 +20,14 @@ TOKEN_FILE = Path(__file__).joinpath("../../token.txt").resolve()
 with TOKEN_FILE.open() as file:
     TOKEN = file.read().strip()
 
+
 class APIRequest:
     def __init__(self, url, method: Method = "GET", data: Dict[str, Any] = {}, *, skip_auth: bool = False):
         self.url = API_ENTRY + url
         self.method = method
         self.data = data
-        self.headers: Dict[str, Any] = {"Authorization": TOKEN} if not skip_auth else {}
+        self.headers: Dict[str, Any] = {
+            "Authorization": TOKEN} if not skip_auth else {}
 
     def data_as_query_str(self) -> str:
         return urlencode(self.data)
@@ -33,7 +35,6 @@ class APIRequest:
 
 def map_types(meta: Callable[..., T], data: Any, _depth=0) -> T:
     # print("  "*_depth, meta, data)
-
     """
     Takes in an object and a dictionary from a json response and parses it using typedefs from the object into that object, recursively
 
@@ -120,19 +121,21 @@ def map_types(meta: Callable[..., T], data: Any, _depth=0) -> T:
         return meta(**new)
     return meta(**data)
 
+
 class RequestInfo:
     def __init__(self, statusCode: int):
         self.statusCode = statusCode
         self.ok: bool = False
         if 200 <= statusCode < 400:
             self.ok = True
-    
+
     def __repr__(self):
         return f"RequestInfo(statusCode={self.statusCode})"
 
+
 class RequestError(Exception):
     info: RequestInfo
-    
+
     def __init__(self, code: int, message: str, errors: dict = {}, *args, **kwargs):
         self.code = code
         self.message = message
@@ -142,8 +145,9 @@ class RequestError(Exception):
 
     def __repr__(self):
         return f"RequestError(code={repr(self.code)},message={repr(self.message)},errors={repr(self.errors)}"
-    
+
     __str__ = __repr__
+
 
 class RequestSuccess(Generic[T]):
     def __init__(self, data: T, info: RequestInfo):

@@ -19,9 +19,11 @@ ZLIB_SUFFIX = b'\x00\x00\xff\xff'
 inflator = decompressobj()
 buffer = bytearray()
 
+
 def send_heartbeat():
     print("Send heartbeat")
     socket.sendTextMessage(json.dumps({"op": 1, "d": last_beat}))
+
 
 def print_text_message(message):
     data = json.loads(message)
@@ -33,12 +35,12 @@ def print_text_message(message):
         interval = data["d"]["heartbeat_interval"]
         print("Sending heartbeats evert", interval/1000, "seconds")
         heartbeat_timer.start(interval)
-    
+
     if data["op"] == 1:
         global last_beat
         last_beat = data["d"]
         print(f"Received heartbeat seq id={last_beat}")
-    
+
     if data["op"] == 11:
         print(f"Recv heartbeat ACK")
 
@@ -53,7 +55,9 @@ def print_bin_message(data: bytes):
     buffer.clear()
     # print(data.hex())
 
-socket.open(QUrl("wss://gateway.discord.gg/?encoding=json&v=8&compress=zlib-stream"))  # 
+
+socket.open(
+    QUrl("wss://gateway.discord.gg/?encoding=json&v=8&compress=zlib-stream"))  #
 
 socket.textMessageReceived.connect(print_text_message)
 socket.binaryMessageReceived.connect(print_bin_message)
@@ -63,8 +67,10 @@ heartbeat_timer.timeout.connect(send_heartbeat)
 # while 1:
 #     sleep(0.1)
 
+
 def sigint_handler(*args):
     app.quit()
+
 
 signal(SIGINT, sigint_handler)
 
