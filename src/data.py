@@ -1,15 +1,9 @@
-
-
 from dataclasses import dataclass
 from PySide2.QtCore import QObject
-from typing import List, Literal, Optional, Union
-from PySide2.QtCore import Slot, Signal
-import PySide2.QtCore
-import typing
-
-from paramiko import Channel
-
-from api.interfaces import Guild, Message, User
+from typing import List, Optional
+from PySide2.QtCore import Signal
+from api.interfaces import Channel
+from api.interfaces import Guild, Message
 
 
 @dataclass
