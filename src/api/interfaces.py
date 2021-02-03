@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
-from typing import Any, Literal, Optional, List, Tuple, Union
+from typing import Any, Generic, Literal, Optional, List, Tuple, TypeVar, Union
 from dataclasses import dataclass
 from enum import Enum
 from dateutil.parser import parse as parsetime
@@ -626,3 +626,11 @@ class SmsAuthResponse:
 @dataclass
 class MfaAuthFinishedResponse:
     token: str
+
+
+@dataclass
+class GatewayPayload:
+    op: int
+    d: Optional[Any]
+    s: Optional[int]
+    t: Optional[str]

@@ -62,6 +62,9 @@ def map_types(meta: Callable[..., T], data: Any, _depth=0) -> T:
     ```
     """
 
+    if meta == Any:
+        return data
+
     if type(data) == dict:
         if ("code" in data and "message" in data) or ("errors" in data):
             raise RequestError(**data)
