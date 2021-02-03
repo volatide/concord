@@ -8,8 +8,18 @@ from zlib import decompressobj
 
 app = QCoreApplication(sys.argv)
 
+login = {
+    "op": 2,
+    "d": {
+        "token": TOKEN,
+        "properties": {
+            "$os": "linux",
+            "$browser": "concord",
+            "$device": "concord"
+        }
+    }
+}
 
-login = json.loads('{"op":2,"d":{"token":"' + TOKEN + '","capabilities":61,"properties":{"os":"Linux","browser":"Firefox","device":"","system_locale":"en-US","browser_user_agent":"Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0","browser_version":"85.0","os_version":"","referrer":"","referring_domain":"","referrer_current":"","referring_domain_current":"","release_channel":"stable","client_build_number":75603,"client_event_source":null},"presence":{"status":"online","since":0,"activities":[],"afk":false},"compress":false,"client_state":{"guild_hashes":{},"highest_last_message_id":"0","read_state_version":0,"user_guild_settings_version":-1}}}')
 
 socket = QWebSocket()
 heartbeat_timer = QTimer()
