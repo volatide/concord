@@ -195,4 +195,4 @@ dmypy.json
 cython_debug/
 
 # Temporary token file
-src/token.txt
+concord/token.txt
