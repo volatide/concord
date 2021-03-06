@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from PySide2.QtCore import QObject
 from typing import List, Optional
 from PySide2.QtCore import Signal
-from api.interfaces import Channel
-from api.interfaces import Guild, Message
+from .api.interfaces import Channel
+from .api.interfaces import Guild, Message
 
 
 @dataclass
@@ -13,6 +13,7 @@ class LocalVoiceState:
 
 
 class State(QObject):
+    new_messages = Signal(List[Message])
     # Also means there are new messages
     new_channel = Signal(Optional[Channel])
     # Also means that there is a new channel
@@ -27,6 +28,19 @@ class State(QObject):
         self._guild: Optional[Guild] = None
         self._voice_state = LocalVoiceState()
         self._settings_open: bool = False
+        
+        self.new_channel.connect(self._handle_new_channel)
+        self.new_guild.connect(self._handle_new_guild)
+    
+    def _handle_new_guild(self, guild: Optional[Guild]):
+        self.new_channel.emit(self.channel)
+    
+    def _handle_new_channel(self, channel: Optional[Channel]):
+        self.new_messages.emit(self._messages)
+
+    @property
+    def messages(self):
+        return self._messages
 
     @property
     def channel(self):
