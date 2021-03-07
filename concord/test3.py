@@ -3,7 +3,7 @@ from PySide2.QtCore import QCoreApplication, QUrl, QTimer
 from PySide2.QtWebSockets import QWebSocket
 import sys
 import json
-from api.utils import TOKEN
+from .api.utils import TOKEN
 from zlib import decompressobj
 
 app = QCoreApplication(sys.argv)

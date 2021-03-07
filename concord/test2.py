@@ -1,11 +1,11 @@
 import sys
 from typing import Optional
 from PySide2.QtCore import QCoreApplication
-from api.endpoints import create_login, send_login_sms, submit_login_sms, submit_totp_code
-from api.interfaces import LoginResponse, Member, MfaAuthFinishedResponse, SmsAuthResponse
+from .api.endpoints import create_login, send_login_sms, submit_login_sms, submit_totp_code
+from .api.interfaces import LoginResponse, Member, MfaAuthFinishedResponse, SmsAuthResponse
 from getpass import getpass
 
-from api.utils import save_token
+from .api.utils import save_token
 
 
 app = QCoreApplication(sys.argv)

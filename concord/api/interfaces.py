@@ -613,9 +613,9 @@ class Message:
 @dataclass
 class LoginResponse:
     token: Optional[str]
-    mfa: bool
-    sms: bool
-    ticket: Optional[str]
+    mfa: Optional[bool] = None
+    sms: Optional[bool] = None
+    ticket: Optional[str] = None
 
 
 @dataclass
