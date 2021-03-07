@@ -1,9 +1,9 @@
 from datetime import datetime
-from api.endpoints import create_message, delete_message, edit_message, get_channel
+from .api.endpoints import create_message, delete_message, edit_message, get_channel
 from PySide2.QtCore import QCoreApplication
 import sys
 
-from api.interfaces import Message, Snowflake
+from .api.interfaces import Message, Snowflake
 
 app = QCoreApplication(sys.argv)
 

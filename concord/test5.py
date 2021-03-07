@@ -1,6 +1,6 @@
 
 from PySide2.QtCore import QCoreApplication
-from api.qgateway import QGateway
+from .api.qgateway import QGateway
 import sys
 
 app = QCoreApplication(sys.argv)
