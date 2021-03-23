@@ -135,6 +135,9 @@ def save_token(token: str):
     with TOKEN_FILE.open("w") as file:
         file.write(token)
 
+def has_token() -> bool:
+    return TOKEN != None
+
 class RequestInfo:
     def __init__(self, statusCode: int):
         self.statusCode = statusCode
