@@ -142,6 +142,8 @@ class RequestInfo:
     def __init__(self, statusCode: int):
         self.statusCode = statusCode
         self.ok: bool = False
+        if type(statusCode) is not int:
+            return
         if 200 <= statusCode < 400:
             self.ok = True
 
