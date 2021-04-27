@@ -22,6 +22,11 @@ class QRequester(QObject):
         super().__init__()
         self.meta = meta
         self.request = APIRequest(url, method, data, skip_auth=skip_auth)
+
+        if method in ["GET"]:
+            self.request.url += "?" + self.request.data_as_query_str()
+            print(self.request.url)
+
         request = QNetworkRequest(QUrl(self.request.url))
 
         args = []

@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, Callable, Generic, TypeVar
 
 from PySide2.QtCore import Slot
-from .interfaces import Channel, Emoji, LoginResponse, Message, MfaAuthFinishedResponse, SmsAuthResponse, Snowflake
+from .interfaces import AuditLog, Channel, Emoji, LoginResponse, Message, MfaAuthFinishedResponse, SmsAuthResponse, Snowflake
 from .utils import RequestError, RequestInfo, RequestSuccess
 from .qrequester import QRequester
 
@@ -87,3 +87,7 @@ def submit_login_sms(ticket: str, code: str) -> DiscordPromise[MfaAuthFinishedRe
 
 def submit_totp_code(ticket: str, code: str) -> DiscordPromise[MfaAuthFinishedResponse]:
     return DiscordPromise(QRequester(f"auth/mfa/totp", MfaAuthFinishedResponse, "POST", {"ticket": ticket, "code": code}, skip_auth=True))
+
+
+def get_guild_audit_log(guild_id: int, query: dict) -> DiscordPromise[AuditLog]:
+    return DiscordPromise(QRequester(f"guilds/{guild_id}/audit-logs", AuditLog, "GET", query))
