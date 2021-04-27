@@ -140,9 +140,115 @@ class OverwriteType(Enum):
     MEMBER = 1
 
 
+class AuditLogEvent(Enum):
+    GUILD_UPDATE = 1
+    CHANNEL_CREATE = 10
+    CHANNEL_UPDATE = 11
+    CHANNEL_DELETE = 12
+    CHANNEL_OVERWRITE_CREATE = 13
+    CHANNEL_OVERWRITE_UPDATE = 14
+    CHANNEL_OVERWRITE_DELETE = 15
+    MEMBER_KICK = 20
+    MEMBER_PRUNE = 21
+    MEMBER_BAN_ADD = 22
+    MEMBER_BAN_REMOVE = 23
+    MEMBER_UPDATE = 24
+    MEMBER_ROLE_UPDATE = 25
+    MEMBER_MOVE = 26
+    MEMBER_DISCONNECT = 27
+    BOT_ADD = 28
+    ROLE_CREATE = 30
+    ROLE_UPDATE = 31
+    ROLE_DELETE = 32
+    INVITE_CREATE = 40
+    INVITE_UPDATE = 41
+    INVITE_DELETE = 42
+    WEBHOOK_CREATE = 50
+    WEBHOOK_UPDATE = 51
+    WEBHOOK_DELETE = 52
+    EMOJI_CREATE = 60
+    EMOJI_UPDATE = 61
+    EMOJI_DELETE = 62
+    MESSAGE_DELETE = 72
+    MESSAGE_BULK_DELETE = 73
+    MESSAGE_PIN = 74
+    MESSAGE_UNPIN = 75
+    INTEGRATION_CREATE = 80
+    INTEGRATION_UPDATE = 81
+    INTEGRATION_DELETE = 82
+
+
+class WebhookType(Enum):
+    INCOMING = 1
+    CHANNEL_FOLLOWER = 2
+
+
+class AuditLogChangeKey(Enum):
+    NAME = "name"
+    DESCRIPTION = "description"
+    ICON_HASH = "icon_hash"
+    SPLASH_HASH = "splash_hash"
+    DISCOVERY_SPLASH_HASH = "discovery_splash_hash"
+    BANNER_HASH = "banner_hash"
+    OWNER_ID = "owner_id"
+    REGION = "region"
+    PREFERRED_LOCALE = "preferred_locale"
+    AFK_CHANNEL_ID = "afk_channel_id"
+    AFK_TIMEOUT = "afk_timeout"
+    RULES_CHANNEL_ID = "rules_channel_id"
+    PUBLIC_UPDATES_CHANNEL_ID = "public_updates_channel_id"
+    MFA_LEVEL = "mfa_level"
+    VERIFICATION_LEVEL = "verification_level"
+    EXPLICIT_CONTENT_FILTER = "explicit_content_filter"
+    DEFAULT_MESSAGE_NOTIFICATIONS = "default_message_notifications"
+    VANITY_URL_CODE = "vanity_url_code"
+    ADD = "$add"
+    REMOVE = "$remove"
+    PRUNE_DELETE_DAYS = "prune_delete_days"
+    WIDGET_ENABLED = "widget_enabled"
+    WIDGET_CHANNEL_ID = "widget_channel_id"
+    SYSTEM_CHANNEL_ID = "system_channel_id"
+    POSITION = "position"
+    TOPIC = "topic"
+    BITRATE = "bitrate"
+    PERMISSION_OVERWRITES = "permission_overwrites"
+    NSFW = "nsfw"
+    APPLICATION_ID = "application_id"
+    RATE_LIMIT_PER_USER = "rate_limit_per_user"
+    PERMISSIONS = "permissions"
+    COLOR = "color"
+    HOIST = "hoist"
+    MENTIONABLE = "mentionable"
+    ALLOW = "allow"
+    DENY = "deny"
+    CODE = "code"
+    CHANNEL_ID = "channel_id"
+    INVITER_ID = "inviter_id"
+    MAX_USES = "max_uses"
+    USES = "uses"
+    MAX_AGE = "max_age"
+    TEMPORARY = "temporary"
+    DEAF = "deaf"
+    MUTE = "mute"
+    NICK = "nick"
+    AVATAR_HASH = "avatar_hash"
+    ID = "id"
+    TYPE = "type"
+    ENABLE_EMOTICONS = "enable_emoticons"
+    EXPIRE_BEHAVIOR = "expire_behavior"
+    EXPIRE_GRACE_PERIOD = "expire_grace_period"
+    USER_LIMIT = "user_limit"
+
+
+class IntegrationExpireBehaviour(Enum):
+    REMOVE_ROLE = 0
+    KICK = 1
+
+
 UserFlags = int
 ActivityFlags = int
 MessageFlags = int
+AuditLogChangeValue = Any
 
 
 class Snowflake(int):
@@ -634,3 +740,82 @@ class GatewayPayload:
     d: Optional[Any]
     s: Optional[int]
     t: Optional[str]
+
+
+@dataclass
+class AuditLogChange:
+    key: AuditLogChangeKey
+    new_value: Optional[AuditLogChangeValue] = None
+    old_value: Optional[AuditLogChangeValue] = None
+
+
+@dataclass
+class OptionalAuditEntryInfo:
+    delete_member_days: Optional[str] = None
+    members_removed: Optional[str] = None
+    channel_id: Optional[Snowflake] = None
+    message_id: Optional[Snowflake] = None
+    count: Optional[str] = None
+    id: Optional[Snowflake] = None
+    type: Optional[str] = None
+    role_name: Optional[str] = None
+
+
+@dataclass
+class AuditLogEntry:
+    id: Snowflake
+    action_type: AuditLogEvent
+    target_id: Optional[str]
+    user_id: Optional[Snowflake]
+    changes: Optional[AuditLogChange] = None
+    options: Optional[OptionalAuditEntryInfo] = None
+    reason: Optional[str] = None
+
+
+@dataclass
+class Webhook:
+    id: Snowflake
+    type: WebhookType
+
+
+@dataclass
+class IntegrationApplication:
+    id: Snowflake
+    name: str
+    icon: Optional[str]
+    description: str
+    summary: str
+    bot: Optional[User] = None
+
+
+@dataclass
+class IntegrationAccount:
+    id: str
+    name: str
+
+
+@dataclass
+class Integration:
+    id: Snowflake
+    name: str
+    type: str
+    enabled: bool
+    account: IntegrationAccount
+    syncing: Optional[bool] = None
+    role_id: Optional[Snowflake] = None
+    enable_emoticons: Optional[bool] = None
+    expire_behavior: Optional[IntegrationExpireBehaviour] = None
+    expire_grace_period: Optional[int] = None
+    user: Optional[User] = None
+    synced_at: Optional[ISO8601] = None
+    subscriber_count: Optional[int] = None
+    revoked: Optional[bool] = None
+    application: Optional[IntegrationApplication] = None
+
+
+@dataclass
+class AuditLog:
+    webhooks: List[Webhook]
+    users: List[User]
+    audit_log_entries: List[AuditLogEntry]
+    integrations: List[Integration]
