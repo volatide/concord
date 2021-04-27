@@ -8,6 +8,7 @@ import '.'
 
 Page {
     anchors.fill: parent
+    id: concord
 
     RowLayout {
         spacing: 0
@@ -51,7 +52,7 @@ Page {
     }
 
     LoginDialog {
-        id: test
+        id: login_dialog
     }
 
 }

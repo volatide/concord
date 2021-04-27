@@ -5,21 +5,42 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Dialogs 1.3
 
-Popup {
+Dialog {
+    objectName: "loginDialog"
+    id: loginDialog
+    title: "Login to discord"
+    standardButtons: Dialog.NoButton
+    
 
-    contentItem: ColumnLayout {
-        anchors.fill: parent
-        spacing: 6
-
-        RowLayout {
+    Page{
+        Layout.fillWidth: true
+        ColumnLayout {
+            anchors.fill: parent
             spacing: 6
 
-            Label {
-                font.pointSize: 22
-                text: "Hejsan"
+            TextField {
+                id: email
+                placeholderText: "Email"
+                Layout.fillWidth: true
+            }
+
+            TextField {
+                id: password
+                placeholderText: "Password"
+                echoMode: TextInput.Password
+                Layout.fillWidth: true
+            }
+
+            RowLayout {
+                Button {
+                    text: "Login"
+                    Layout.fillWidth: true
+                }
+                Button {
+                    text: "Cancel"
+                    onClicked: loginDialog.close()
+                }
             }
         }
-
     }
-    
 }
