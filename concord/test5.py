@@ -7,6 +7,9 @@ app = QCoreApplication(sys.argv)
 
 gateway = QGateway()
 
-gateway.new_event.connect(lambda x: print(str(x)[0:200], "..."))
+def on_message(message):
+    print(str(message)[0:200], "...")
+
+gateway.new_event.connect(on_message)
 
 sys.exit(app.exec_())
