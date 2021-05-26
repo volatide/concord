@@ -3,7 +3,8 @@ from PySide2.QtCore import QCoreApplication, QUrl, QTimer
 from PySide2.QtWebSockets import QWebSocket
 import sys
 import json
-from .api.utils import TOKEN
+from .api.utils import TOKEN, map_types
+from .api.interfaces import Message, MessageType
 from zlib import decompressobj
 
 app = QCoreApplication(sys.argv)
@@ -38,7 +39,12 @@ def send_heartbeat():
 def print_text_message(message):
     data = json.loads(message)
     if data["op"] == 0:
-        print(str(data)[0:200], "...")
+        if data["t"] == "MESSAGE_CREATE":
+            message = map_types(Message, data["d"])
+            print(message.author.username + message.author.discriminator + ":", message.content)
+        else:
+            pass
+            # print(str(data)[0:200], "...")
 
     if data["op"] == 10:
         socket.sendTextMessage(json.dumps(login))
